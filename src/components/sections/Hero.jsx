@@ -1,62 +1,83 @@
-import React from "react";
-import { Github, Linkedin, Mail, ShieldCheck, Code2, TerminalSquare, ChevronDown, ArrowRight } from "lucide-react";
-import { YOU, theme } from "../../data/profile";
-import Background from "../layout/Background";
-import Pill from "../atoms/Pill";
+// src/components/sections/Hero.jsx
+import { motion } from "framer-motion";
+import AvatarGlitch from "../atoms/AvatarGlitch";
+
+const NAME = "Rajdip Dey Sarkar";
+const ROLE = "Security Consultant";
+const AVATAR = "/assets/avatar.png"; // put image in public/assets/
 
 export default function Hero() {
-  console.log("[Hero] static variant mounted");
   return (
-    <section id="home" className="relative mx-auto max-w-6xl px-4 pb-20 pt-24">
-      <Background />
-      <p id="bootmsg" className="text-lime-300 mb-3">&gt; initializing profile…</p>
+    <section
+      id="home"
+      className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 pt-24 md:grid-cols-2 lg:pt-28"
+      style={{ minHeight: "86vh" }}
+    >
+      {/* Left: text */}
+      <div>
+        <p className="mb-4 text-cyan-300/80">Hello, I’m</p>
 
-      <div className="grid items-center gap-10 md:grid-cols-2">
-        <div>
-          <h1 className="text-5xl font-extrabold tracking-tight text-white md:text-6xl">{YOU.name}</h1>
-          <h2 className="mt-3 bg-gradient-to-r from-lime-300 to-cyan-300 bg-clip-text text-2xl font-semibold text-transparent">
-            {YOU.role}
-          </h2>
-          <p className="mt-5 max-w-xl text-white/75">{YOU.tagline}</p>
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="glitch text-5xl font-extrabold tracking-tight sm:text-6xl"
+          data-glitch={NAME}
+        >
+          {NAME}
+        </motion.h1>
 
-          <div className="mt-7 flex flex-wrap items-center gap-3">
-            <a href={YOU.ctaProjectsHref} className={`${theme.linkBtn} shadow-[0_0_30px_rgba(163,255,94,0.15)]`}>
-              View Projects <ArrowRight className="h-4 w-4" />
-            </a>
-            <a href={YOU.ctaContactHref} className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm text-white/80 hover:bg-white/5">
-              Contact Me <Mail className="h-4 w-4" />
-            </a>
-          </div>
-
-          <div className="mt-7 flex items-center gap-3">
-            <Pill icon={ShieldCheck}>Security</Pill>
-            <Pill icon={Code2}>Developer</Pill>
-            <Pill icon={TerminalSquare}>Hacker</Pill>
-          </div>
-
-          <div className="mt-7 flex gap-4">
-            <a href={YOU.social.github} target="_blank" rel="noreferrer" className="text-white/70 hover:text-white"><Github className="h-6 w-6" /></a>
-            <a href={YOU.social.linkedin} target="_blank" rel="noreferrer" className="text-white/70 hover:text-white"><Linkedin className="h-6 w-6" /></a>
-            <a href={YOU.social.email} className="text-white/70 hover:text-white"><Mail className="h-6 w-6" /></a>
-          </div>
+        <div className="mt-4 inline-block">
+          <span className="text-2xl font-semibold text-cyan-300">{ROLE}</span>
+          <span className="relative block h-[3px] w-full overflow-hidden rounded bg-gradient-to-r from-purple-500/60 via-cyan-400 to-purple-500/60">
+            <i className="absolute inset-y-0 left-0 w-16 bg-white/70 mix-blend-overlay animate-[scan_2.2s_linear_infinite]" />
+          </span>
         </div>
 
-        <div className="relative">
-          <div className={`relative mx-auto aspect-square max-w-[440px] overflow-hidden ${theme.frame} p-2`}>
-            <div className="absolute -inset-4 -z-10 rounded-[2rem] opacity-40 blur-3xl [background:conic-gradient(from_0deg,#67e8f9_0%,#a3ff5e_40%,transparent_60%)]" />
-            <div className="h-full w-full rounded-2xl bg-[#0b1220] p-4">
-              <img alt="avatar" src={YOU.avatarUrl} className="h-full w-full rounded-2xl object-contain" />
-            </div>
-          </div>
-        </div>
+        <motion.p
+          className="mt-5 max-w-xl text-gray-300"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          A passionate cybersecurity professional specializing in penetration
+          testing, vulnerability assessment, and secure application development.
+        </motion.p>
+
+        <motion.div
+          className="mt-7 flex flex-wrap gap-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.35 }}
+        >
+          <a
+            href="#projects"
+            className="rounded-xl bg-cyan-400 px-6 py-3 font-bold text-black shadow-lg shadow-cyan-400/20 transition hover:-translate-y-0.5 hover:bg-cyan-300"
+          >
+            View Projects
+          </a>
+          <a
+            href="#contact"
+            className="rounded-xl border border-cyan-300/50 px-6 py-3 font-semibold text-cyan-300 transition hover:bg-cyan-300/10"
+          >
+            Contact Me
+          </a>
+        </motion.div>
       </div>
 
-      <div className="mt-12 flex justify-center">
-        <a href="#about" className="inline-flex items-center gap-2 text-white/70 hover:text-white">
-          <ChevronDown className="h-5 w-5 animate-bounce" />
-          Scroll
-        </a>
-      </div>
+    {/* Right: avatar — exact like reference */}
+<AvatarGlitch src="/assets/avatar.png" alt={`${NAME} avatar`} />
+
+      {/* local styles */}
+      <style>{`
+        .glitch{position:relative;color:#e5e7eb;text-shadow:0 0 18px rgba(124,58,237,.35)}
+        .glitch::before,.glitch::after{content:attr(data-glitch);position:absolute;top:0;left:0;width:100%;opacity:.9}
+        .glitch::before{color:#22d3ee;transform:translate(1px,0);animation:gl1 2.1s infinite linear alternate-reverse;mix-blend-mode:screen}
+        .glitch::after{color:#a78bfa;transform:translate(-1px,0);animation:gl2 1.7s infinite linear alternate-reverse;mix-blend-mode:screen}
+        @keyframes gl1{0%{clip-path:inset(0 0 86% 0)}50%{clip-path:inset(40% 0 30% 0)}100%{clip-path:inset(0 0 0 0)}}
+        @keyframes gl2{0%{clip-path:inset(90% 0 0 0)}50%{clip-path:inset(30% 0 40% 0)}100%{clip-path:inset(0 0 0 0)}}
+        @keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
+      `}</style>
     </section>
   );
 }
