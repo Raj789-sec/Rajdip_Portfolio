@@ -10,68 +10,113 @@ const CACHE_KEY = "medium_cards_cache_v4";
 const CACHE_TTL_MIN = 30;
 
 /* ── Helpers ────────────────────────────────────────────────────────── */
+/**
+ * Strips HTML tags and excessive whitespace from a string.
+ * @param {string} html The HTML string to process.
+ * @returns {string} The cleaned, plain text string.
+ */
 const stripHtml = (html = "") =>
   html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 
+/**
+ * Formats an ISO date string into a user-friendly format (e.g., "Jan 2023").
+ * @param {string} iso The ISO date string.
+ * @returns {string} The formatted date string.
+ */
 const fmtDate = (iso) =>
   new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short" });
 
+/**
+ * Estimates the reading time of a given text.
+ * @param {string} text The text to analyze.
+ * @returns {string} The estimated reading time (e.g., "5 min read").
+ */
 const readTime = (text) => {
-  const w = text.split(/\s+/).filter(Boolean).length;
-  return `${Math.max(3, Math.round(w / 220))} min read`;
+  const words = text.split(/\s+/).filter(Boolean).length;
+  return `${Math.max(3, Math.round(words / 220))} min read`;
 };
 
-/* ── Component ──────────────────────────────────────────────────────── */
-export default function Blogs() {
+/* ── Custom Hook for Data Fetching ──────────────────────────────────── */
+/**
+ * A custom hook to fetch and cache blog posts from a Medium RSS feed.
+ * It handles the loading state and prevents refetching data unnecessarily.
+ * @returns {{ posts: any[], loading: boolean }} The fetched posts and loading state.
+ */
+const useMediumPosts = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-    async function load() {
+    let isMounted = true;
+    const fetchPosts = async () => {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
         try {
           const { ts, items } = JSON.parse(cached);
+          // Check if the cache is still valid
           if ((Date.now() - ts) / 60000 < CACHE_TTL_MIN) {
             setPosts(items);
             setLoading(false);
             return;
           }
-        } catch {}
+        } catch (e) {
+          console.error("Failed to parse cached data:", e);
+        }
       }
+
       try {
         const res = await fetch(RSS_PROXY);
         const data = await res.json();
-        const items = (data?.items || []).map((it) => {
-          const clean = stripHtml(it.description);
-          return {
-            title: it.title,
-            url: it.link,
-            date: it.pubDate,
-            read: readTime(clean),
-            tags: it.categories || [],
-            excerpt: clean,
-          };
-        });
-        if (!mounted) return;
-        setPosts(items);
-        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), items }));
+        const items = (data?.items || [])
+          .map((it) => {
+            const clean = stripHtml(it.description);
+            return {
+              title: it.title,
+              url: it.link,
+              date: it.pubDate,
+              read: readTime(clean),
+              tags: it.categories || [],
+              excerpt: clean,
+            };
+          })
+          .filter((it) => it.title); // Filter out any malformed posts
+
+        if (isMounted) {
+          setPosts(items);
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), items }));
+        }
       } catch (e) {
-        console.error("Medium RSS error:", e);
+        console.error("Medium RSS fetch error:", e);
       } finally {
-        if (mounted) setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-    }
-    load();
-    return () => { mounted = false; };
+    };
+
+    fetchPosts();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
+
+  return { posts, loading };
+};
+
+/* ── Main Component ─────────────────────────────────────────────────── */
+/**
+ * The main component for displaying blog posts.
+ * It fetches data using a custom hook and renders a grid of BlogCard components.
+ */
+export default function Blogs() {
+  const { posts, loading } = useMediumPosts();
 
   const grid = useMemo(() => (loading ? Array.from({ length: 6 }) : posts), [loading, posts]);
 
   return (
     <section id="Blogs" className="relative mx-auto max-w-6xl px-4 sm:px-6 md:px-8 py-16 scroll-mt-28">
-      {/* ── Heading OUTSIDE the shell ── */}
+      {/* Heading OUTSIDE the shell */}
       <div className="text-center mb-10">
         <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight">
           <span className="grad-heading">&gt; Blogs</span>
@@ -89,6 +134,7 @@ export default function Blogs() {
             href={`https://medium.com/@${MEDIUM_USERNAME}`}
             target="_blank"
             rel="noreferrer"
+            aria-label={`Visit ${MEDIUM_USERNAME}'s Medium Profile`}
             className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition"
           >
             Visit Medium Profile
@@ -97,7 +143,7 @@ export default function Blogs() {
         </div>
 
         {/* Grid */}
-        <div className="grid gap-7 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-7">
           {grid.map((p, i) =>
             loading ? (
               <div key={i} className="h-[220px] rounded-3xl border border-white/10 bg-white/5 animate-pulse" />
@@ -113,7 +159,11 @@ export default function Blogs() {
   );
 }
 
-/* ── Card (unchanged) ───────────────────────────── */
+/* ── Blog Card Component (with accessibility improvements) ──────────── */
+/**
+ * A component for displaying a single blog post card.
+ * @param {{ post: any }} props The post data.
+ */
 function BlogCard({ post }) {
   return (
     <motion.article
@@ -142,6 +192,7 @@ function BlogCard({ post }) {
           href={post.url}
           target="_blank"
           rel="noreferrer"
+          aria-label={`Read article: ${post.title}`}
           className="relative text-[18px] font-extrabold leading-snug text-white hover:text-cyan-300 transition-colors clamp-2"
         >
           {post.title}
@@ -174,6 +225,7 @@ function BlogCard({ post }) {
             href={post.url}
             target="_blank"
             rel="noreferrer"
+            aria-label={`Read article: ${post.title}`}
             className="inline-flex items-center gap-2 text-[14px] font-semibold text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/40 px-3.5 py-2 rounded-xl transition"
           >
             Read Article

@@ -10,18 +10,20 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 pt-24 md:grid-cols-2 lg:pt-28"
+      className="relative mx-auto flex max-w-6xl flex-col items-center gap-10 px-4 pt-24 md:flex-row md:justify-between lg:pt-28"
       style={{ minHeight: "86vh" }}
     >
       {/* Left: text */}
-      <div>
-        <p className="mb-4 text-cyan-300/80">Hello, I’m</p>
+      <div className="md:w-1/2">
+        <p className="mb-4 text-center text-cyan-300/80 md:text-left">
+          Hello, I’m
+        </p>
 
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="glitch text-5xl font-extrabold tracking-tight sm:text-6xl"
+          className="glitch text-center text-5xl font-extrabold tracking-tight sm:text-6xl md:text-left"
           data-glitch={NAME}
         >
           {NAME}
@@ -35,7 +37,7 @@ export default function Hero() {
         </div>
 
         <motion.p
-          className="mt-5 max-w-xl text-gray-300"
+          className="mt-5 max-w-xl text-center text-gray-300 md:text-left"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -45,7 +47,7 @@ export default function Hero() {
         </motion.p>
 
         <motion.div
-          className="mt-7 flex flex-wrap gap-4"
+          className="mt-7 flex flex-wrap justify-center gap-4 md:justify-start"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.35 }}
@@ -65,8 +67,8 @@ export default function Hero() {
         </motion.div>
       </div>
 
-    {/* Right: avatar — exact like reference */}
-<AvatarGlitch src="/assets/avatar.png" alt={`${NAME} avatar`} />
+      {/* Right: avatar — exact like reference */}
+      <AvatarGlitch src={AVATAR} alt={`${NAME} avatar`} />
 
       {/* local styles */}
       <style>{`
