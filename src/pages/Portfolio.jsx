@@ -1,4 +1,3 @@
-// src/pages/Portfolio.jsx
 import { useEffect } from "react";
 import Background from "../components/layout/Background";
 import Nav from "../components/layout/Nav";
@@ -6,16 +5,17 @@ import Nav from "../components/layout/Nav";
 import Hero from "../components/sections/Hero";
 import ScrollCue from "../components/atoms/ScrollCue";
 import About from "../components/sections/About";
+import Services from "../components/sections/Services";
 import Achievements from "../components/sections/Achievements";
 import Skills from "../components/sections/Skills";
 import ExperienceEducation from "../components/sections/ExperienceEducation";
 import ProjectsResearch from "../components/sections/ProjectsResearch";
 import Blogs from "../components/sections/Blogs";
-import Footer from "../components/layout/Footer"; // Contact
+import Footer from "../components/layout/Footer";
 
 export default function Portfolio() {
   useEffect(() => {
-    document.documentElement.classList.add("dark", "font-mono");
+    document.documentElement.classList.add("dark");
   }, []);
 
   return (
@@ -24,17 +24,18 @@ export default function Portfolio() {
       <main className="relative z-10 min-h-screen text-white scroll-smooth">
         <Nav />
 
-        {/* HERO */}
         <Hero />
 
-        {/* tiny gap + scroll cue to About */}
         <section className="py-6">
           <ScrollCue href="#about" />
         </section>
 
-        {/* ==== ORDERED SECTIONS ==== */}
         <section id="about" className="section scroll-mt-24">
           <About />
+        </section>
+
+        <section id="services" className="section scroll-mt-24">
+          <Services />
         </section>
 
         <section id="achievements" className="section scroll-mt-24">
@@ -57,7 +58,6 @@ export default function Portfolio() {
           <Blogs />
         </section>
 
-        {/* CONTACT / FOOTER */}
         <Footer />
       </main>
     </>

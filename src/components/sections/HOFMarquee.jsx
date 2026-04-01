@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function HOFMarquee({ items, speed = 50, height = 64, gap = 56 }) {
   const setRef = useRef(null);
@@ -8,7 +8,6 @@ export default function HOFMarquee({ items, speed = 50, height = 64, gap = 56 })
   useEffect(() => {
     const measure = () => {
       if (!setRef.current || !trackRef.current) return;
-      // real width of Set A (includes its internal column gaps)
       const setW = setRef.current.scrollWidth;
       trackRef.current.style.setProperty("--set-w", `${setW}px`);
       trackRef.current.style.setProperty("--gap", `${gap}px`);
@@ -16,7 +15,6 @@ export default function HOFMarquee({ items, speed = 50, height = 64, gap = 56 })
       setReady(true);
     };
 
-    // wait for images to load once, then measure
     const imgs = Array.from(setRef.current?.querySelectorAll("img") || []);
     let left = imgs.length;
     if (left === 0) measure();
@@ -38,7 +36,6 @@ export default function HOFMarquee({ items, speed = 50, height = 64, gap = 56 })
 
   return (
     <div className="relative w-full py-2">
-      {/* edge fade */}
       <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
         <div
           ref={trackRef}
@@ -55,13 +52,12 @@ export default function HOFMarquee({ items, speed = 50, height = 64, gap = 56 })
                   alt={it.name}
                   title={it.name}
                   style={{ maxHeight: height }}
-                  className="w-auto object-contain opacity-90 hover:opacity-100 transition-transform duration-400 ease-out hover:scale-[1.12] hover:drop-shadow-[0_0_12px_rgba(56,189,248,0.65)]"
+                  className="w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-300"
                 />
               </li>
             ))}
           </ul>
 
-          {/* spacer between Set A and Set B so the loop point has a gap */}
           <div className="shrink-0" style={{ width: gap }} aria-hidden />
 
           {/* Set B (duplicate) */}
@@ -72,7 +68,7 @@ export default function HOFMarquee({ items, speed = 50, height = 64, gap = 56 })
                   src={it.logo}
                   alt={it.name}
                   style={{ maxHeight: height }}
-                  className="w-auto object-contain opacity-90 hover:opacity-100 transition-transform duration-400 ease-out hover:scale-[1.12] hover:drop-shadow-[0_0_12px_rgba(56,189,248,0.65)]"
+                  className="w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-300"
                 />
               </li>
             ))}

@@ -2,29 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-/* === Your custom global styles === */
-
-/* Prevents sticky nav from hiding section titles */
-html {
-  scroll-padding-top: 80px; /* adjust if nav height changes */
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background-color: #0f172a;
+  color: #e2e8f0;
 }
 
-/* Uniform spacing for all sections */
+html {
+  scroll-padding-top: 80px;
+  scroll-behavior: smooth;
+}
+
 .section {
-  padding-top: 3rem;  /* 48px */
+  padding-top: 3rem;
   padding-bottom: 3rem;
 }
 
 @media (min-width: 768px) {
   .section {
-    padding-top: 4rem;  /* 64px */
+    padding-top: 4rem;
     padding-bottom: 4rem;
   }
 }
 
 @media (min-width: 1024px) {
   .section {
-    padding-top: 5rem;  /* 80px */
+    padding-top: 5rem;
     padding-bottom: 5rem;
   }
 }
