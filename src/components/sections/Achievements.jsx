@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Globe, Trophy, Award, Shield, Zap, Target, CalendarDays } from "lucide-react";
+import { Globe, Trophy, Award, Zap, Target } from "lucide-react";
 import HOFMarquee from "./HOFMarquee";
 
 import BBCLogo from "../../assets/BBC.png";
@@ -41,88 +41,75 @@ const HOF_ITEMS = [
   { name: "FlowCrypt", logo: FlowcryptLogo },
 ];
 
-const fade = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
+const fade = (d = 0) => ({
+  initial: { opacity: 0, y: 16 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.5, delay: d, ease: [0.22, 1, 0.36, 1] },
+});
 
 export default function Achievements() {
   return (
-    <section id="Achievements" className="relative py-24 px-6 scroll-mt-28">
-      <div className="mx-auto w-full max-w-6xl">
-        <div className="mb-12">
+    <section id="Achievements" className="relative py-20 px-6 scroll-mt-28">
+      <div className="mx-auto max-w-6xl">
+        <motion.div {...fade()}>
           <p className="text-sm font-medium text-violet-400/80 tracking-wide uppercase mb-3">Recognition</p>
-          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">
+          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-10">
             <span className="gradient-text">Achievements.</span>
           </h2>
-        </div>
-
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-10%" }}
-          variants={{ show: { transition: { staggerChildren: 0.1 } } }}
-        >
-          {/* Hall of Fame */}
-          <motion.div variants={fade}>
-            <h3 className="text-lg font-semibold text-white/70 mb-4 flex items-center gap-3">
-              <Globe className="h-5 w-5 text-violet-400" /> Hall of Fame
-            </h3>
-            <p className="max-w-3xl text-sm text-white/40 leading-relaxed mb-8">
-              Recognized by <span className="text-white/70">Apple, Microsoft, Sony, BBC, Yahoo, Nokia, Philips, Huawei, Mastercard</span> and public institutions like the <span className="text-white/70">U.S. DoD, Government of India</span>, and <span className="text-white/70">Dutch Government</span>. <span className="text-white/60 font-medium">80+ acknowledgments</span> across global organizations.
-            </p>
-            <div className="mb-14">
-              <HOFMarquee items={HOF_ITEMS} speed={55} height={64} gap={56} />
-            </div>
-          </motion.div>
-
-          {/* CTF */}
-          <motion.div variants={fade}>
-            <h3 className="text-lg font-semibold text-white/70 mb-5 flex items-center gap-3">
-              <Trophy className="h-5 w-5 text-violet-400" /> CTF Highlights
-            </h3>
-            <div className="grid gap-4 md:grid-cols-2">
-              {[
-                { title: "North Bengal CTF", year: "2022", badge: "Winner — 1st Place", icon: <Trophy className="h-4 w-4 text-amber-400" /> },
-                { title: "Kolkata Police CTF", year: "2023", badge: "5th Place — Top 5", icon: <Award className="h-4 w-4 text-violet-400" /> },
-              ].map((c, i) => (
-                <div key={i} className="rounded-2xl glass border-gradient p-6 transition-all duration-300 hover:bg-white/[0.05]">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-lg font-semibold text-white/90">{c.title}</h4>
-                    <span className="text-xs text-white/25">{c.year}</span>
-                  </div>
-                  <div className="mt-2 inline-flex items-center gap-2 text-sm text-white/50">
-                    {c.icon} {c.badge}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Platforms */}
-          <motion.div variants={fade} className="mt-8">
-            <h3 className="text-lg font-semibold text-white/70 mb-5 flex items-center gap-3">
-              <Shield className="h-5 w-5 text-violet-400" /> Platforms
-            </h3>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-2xl glass border-gradient p-6 transition-all duration-300 hover:bg-white/[0.05]">
-                <h4 className="text-lg font-semibold text-white/90">Hack The Box</h4>
-                <div className="mt-2 inline-flex items-center gap-2 text-sm text-white/50">
-                  <Zap className="h-4 w-4 text-emerald-400" /> Pro Hacker
-                </div>
-              </div>
-              <div className="rounded-2xl glass border-gradient p-6 transition-all duration-300 hover:bg-white/[0.05]">
-                <h4 className="text-lg font-semibold text-white/90">TryHackMe</h4>
-                <div className="mt-2 inline-flex items-center gap-2 text-sm text-white/50">
-                  <Target className="h-4 w-4 text-blue-400" /> Top 1% ·{" "}
-                  <a className="text-violet-400 hover:text-violet-300 transition-colors" href="https://tryhackme.com/p/Raj7" target="_blank" rel="noreferrer">
-                    profile
-                  </a>
-                </div>
-              </div>
-            </div>
-          </motion.div>
         </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+          {/* HOF marquee — full width */}
+          <motion.div {...fade(0.1)} className="md:col-span-12 bento bento-accent p-7">
+            <div className="flex items-center gap-2 mb-4">
+              <Globe className="h-5 w-5 text-violet-400" />
+              <h3 className="text-sm font-semibold text-white/60">Hall of Fame</h3>
+            </div>
+            <p className="text-sm text-white/30 mb-6 max-w-2xl">
+              Recognized by <span className="text-white/50">Apple, Microsoft, Sony, BBC, Yahoo, Mastercard, U.S. DoD, Government of India</span> and more. <span className="text-white/50 font-medium">80+ acknowledgments</span> worldwide.
+            </p>
+            <HOFMarquee items={HOF_ITEMS} speed={55} height={56} gap={48} />
+          </motion.div>
+
+          {/* CTFs — left */}
+          <motion.div {...fade(0.2)} className="md:col-span-6 bento p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Trophy className="h-5 w-5 text-amber-400" />
+              <h3 className="text-sm font-semibold text-white/60">CTF Highlights</h3>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-white/70">North Bengal CTF</span>
+                <span className="text-xs text-amber-400/70 font-medium">Winner — 1st Place</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-white/70">Kolkata Police CTF</span>
+                <span className="text-xs text-violet-400/70 font-medium">5th Place — Top 5</span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Platforms — right */}
+          <motion.div {...fade(0.3)} className="md:col-span-6 bento p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Zap className="h-5 w-5 text-emerald-400" />
+              <h3 className="text-sm font-semibold text-white/60">Platforms</h3>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-white/70">Hack The Box</span>
+                <span className="text-xs text-emerald-400/70 font-medium">Pro Hacker</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-white/70">TryHackMe</span>
+                <a href="https://tryhackme.com/p/Raj7" target="_blank" rel="noreferrer" className="text-xs text-blue-400/70 hover:text-blue-300 font-medium transition-colors">
+                  Top 1% · profile
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -2,85 +2,63 @@ import { motion } from "framer-motion";
 import { Shield, Smartphone, Database, Monitor, FlaskConical, Cloud } from "lucide-react";
 
 const skills = [
-  {
-    title: "Web Application Security",
-    icon: <Shield className="h-6 w-6" />,
-    desc: "Advanced penetration testing of web apps & APIs — authentication, authorization, and business logic flaws.",
-  },
-  {
-    title: "Mobile Security",
-    icon: <Smartphone className="h-6 w-6" />,
-    desc: "Comprehensive assessments of Android & iOS apps, including reverse engineering and runtime analysis.",
-  },
-  {
-    title: "API Security",
-    icon: <Database className="h-6 w-6" />,
-    desc: "Deep expertise in REST/GraphQL API testing — authentication, rate limiting, and data validation.",
-  },
-  {
-    title: "Thick Client Security",
-    icon: <Monitor className="h-6 w-6" />,
-    desc: "Security assessments of desktop apps (Windows, macOS, Linux) including binary analysis.",
-  },
-  {
-    title: "Security Research",
-    icon: <FlaskConical className="h-6 w-6" />,
-    desc: "Source code review, vulnerability analysis, exploit development, and automation.",
-  },
-  {
-    title: "Cloud & Red Teaming",
-    icon: <Cloud className="h-6 w-6" />,
-    desc: "Adversary simulation in cloud environments — privilege escalation, lateral movement, evasion.",
-  },
+  { title: "Web App Security", icon: <Shield className="h-5 w-5" />, desc: "Auth, biz logic, OWASP Top 10" },
+  { title: "Mobile Security", icon: <Smartphone className="h-5 w-5" />, desc: "Android & iOS, RE, runtime" },
+  { title: "API Security", icon: <Database className="h-5 w-5" />, desc: "REST, GraphQL, rate limiting" },
+  { title: "Thick Client", icon: <Monitor className="h-5 w-5" />, desc: "Desktop apps, binary analysis" },
+  { title: "Security Research", icon: <FlaskConical className="h-5 w-5" />, desc: "Code review, exploit dev" },
+  { title: "Cloud & Red Team", icon: <Cloud className="h-5 w-5" />, desc: "AWS, AD, lateral movement" },
 ];
 
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
-};
+const tools = [
+  "Burp Suite", "Metasploit", "Nmap", "Wireshark", "BloodHound", "Cobalt Strike",
+  "Python", "Bash", "Nuclei", "FFUF", "SQLMap", "Frida",
+  "MITRE ATT&CK", "OWASP", "Ghidra", "IDA Pro",
+];
 
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
+const fade = (d = 0) => ({
+  initial: { opacity: 0, y: 16 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.5, delay: d, ease: [0.22, 1, 0.36, 1] },
+});
 
 export default function Skills() {
   return (
-    <section id="skills" className="relative py-24 px-6">
+    <section id="skills" className="relative py-20 px-6">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-12">
+        <motion.div {...fade()}>
           <p className="text-sm font-medium text-violet-400/80 tracking-wide uppercase mb-3">Expertise</p>
-          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">
+          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-10">
             <span className="gradient-text">What I do best.</span>
           </h2>
-          <p className="mt-4 text-white/40 max-w-xl">
-            Specialized areas across offensive security, from web apps to cloud infrastructure.
-          </p>
-        </div>
+        </motion.div>
 
-        <motion.div
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.15 }}
-          className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
-        >
+        {/* Skills bento grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
           {skills.map((s, i) => (
-            <motion.article
-              key={i}
-              variants={item}
-              whileHover={{ y: -4 }}
-              transition={{ type: "spring", stiffness: 300, damping: 24 }}
-              className="group rounded-2xl glass border-gradient p-7 transition-all duration-300 hover:bg-white/[0.05]"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/15 to-blue-500/15 text-violet-400 ring-1 ring-white/[0.06]
-                            group-hover:from-violet-500/25 group-hover:to-blue-500/25 transition-all duration-300">
+            <motion.div key={i} {...fade(0.05 * i)} className="bento p-5 flex items-start gap-3">
+              <div className="h-10 w-10 shrink-0 rounded-xl bg-violet-500/10 text-violet-400 flex items-center justify-center">
                 {s.icon}
               </div>
-              <h3 className="mt-5 text-lg font-semibold text-white/90">{s.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-white/40">{s.desc}</p>
-            </motion.article>
+              <div>
+                <div className="text-sm font-semibold text-white/85">{s.title}</div>
+                <div className="text-xs text-white/30 mt-0.5">{s.desc}</div>
+              </div>
+            </motion.div>
           ))}
+        </div>
+
+        {/* Tools & Tech */}
+        <motion.div {...fade(0.3)} className="bento bento-accent p-7">
+          <h3 className="text-sm font-medium text-white/40 tracking-wide uppercase mb-4">Tools & Tech Stack</h3>
+          <div className="flex flex-wrap gap-2">
+            {tools.map((t) => (
+              <span key={t} className="rounded-lg bg-white/[0.03] border border-white/[0.06] px-3.5 py-2 text-xs font-medium text-white/40 hover:text-white/70 hover:border-white/[0.15] hover:bg-white/[0.06] transition-all duration-300 cursor-default">
+                {t}
+              </span>
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>

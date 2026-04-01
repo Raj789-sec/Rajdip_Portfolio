@@ -1,160 +1,115 @@
 import { motion } from "framer-motion";
-import { ArrowDown, Shield, Terminal, Zap } from "lucide-react";
-import AvatarGlitch from "../atoms/AvatarGlitch";
+import { Shield, Terminal, Zap, ArrowDown, MapPin } from "lucide-react";
 
 const NAME = "Rajdip Dey Sarkar";
-const ROLE = "Security Consultant";
 const AVATAR = "/assets/avatar.png";
 
-const stats = [
-  { value: "4+", label: "Years Exp." },
-  { value: "50+", label: "Hall of Fame" },
-  { value: "2", label: "Published CVEs" },
-  { value: "80+", label: "Recognitions" },
-];
+const fade = (delay = 0) => ({
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] },
+});
 
 export default function Hero() {
   return (
-    <section
-      id="home"
-      className="relative mx-auto max-w-6xl px-6 pt-20 lg:pt-28"
-      style={{ minHeight: "92vh" }}
-    >
-      <div className="flex flex-col items-center gap-16 lg:flex-row lg:items-center lg:justify-between">
-        {/* Left */}
-        <div className="lg:w-[55%]">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full bg-violet-500/10 border border-violet-500/20 px-4 py-1.5 text-sm text-violet-300"
-          >
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            Available for engagements
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05]"
-          >
-            <span className="text-white">{NAME.split(" ")[0]}</span>
-            <br />
-            <span className="gradient-text">{NAME.split(" ").slice(1).join(" ")}</span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="mt-2 text-xl sm:text-2xl font-medium text-white/40"
-          >
-            {ROLE}
-          </motion.p>
-
-          <motion.p
-            className="mt-6 max-w-lg text-base text-white/50 leading-relaxed"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-          >
-            Offensive security specialist. I break things so you can build them stronger.
-            Penetration testing, red teaming & vulnerability research.
-          </motion.p>
-
-          <motion.div
-            className="mt-8 flex flex-wrap gap-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.55 }}
-          >
-            <a
-              href="#projects"
-              className="group inline-flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 px-7 py-4 font-semibold text-white
-                         shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30
-                         transition-all duration-300 hover:-translate-y-0.5"
-            >
-              View Work
-              <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
-            </a>
-            <a
-              href="#contact"
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-7 py-4 font-semibold text-white/70
-                         hover:bg-white/[0.06] hover:border-white/[0.12] hover:text-white
-                         transition-all duration-300"
-            >
-              Contact Me
-            </a>
-          </motion.div>
-
-          {/* Stats */}
-          <motion.div
-            className="mt-12 grid grid-cols-4 gap-4 max-w-md"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.6 }}
-          >
-            {stats.map((s) => (
-              <div key={s.label}>
-                <div className="text-2xl font-bold text-white">{s.value}</div>
-                <div className="text-xs text-white/30 mt-0.5">{s.label}</div>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* Right: Avatar */}
+    <section id="home" className="relative mx-auto max-w-6xl px-6 pt-24 pb-8 lg:pt-32">
+      {/* Bento Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+        {/* Main intro — spans 8 cols */}
         <motion.div
-          className="lg:w-[40%] flex justify-center"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          {...fade(0)}
+          className="md:col-span-8 bento bento-accent p-8 sm:p-10 flex flex-col justify-between min-h-[340px]"
         >
-          <div className="relative">
-            {/* Glow behind avatar */}
-            <div className="absolute -inset-10 rounded-full bg-gradient-to-br from-violet-500/20 to-blue-500/10 blur-[80px] animate-glow-pulse" />
-            <AvatarGlitch src={AVATAR} alt={`${NAME} avatar`} />
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-medium text-emerald-400 mb-6">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Available for engagements
+            </div>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]">
+              <span className="text-white">Hey, I'm </span>
+              <span className="gradient-text">{NAME}</span>
+            </h1>
+            <p className="mt-4 text-lg text-white/40 max-w-lg">
+              Offensive security specialist. I break things so you can build them stronger.
+            </p>
+          </div>
 
-            {/* Floating badges */}
-            <motion.div
-              className="absolute -left-6 top-8 flex items-center gap-2 rounded-2xl glass border-gradient px-4 py-2.5 text-sm text-white/80"
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <Shield className="h-4 w-4 text-violet-400" /> Pentester
-            </motion.div>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a href="#services" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30 transition-all duration-300 hover:-translate-y-0.5">
+              View Services <ArrowDown className="h-3.5 w-3.5" />
+            </a>
+            <a href="#contact" className="inline-flex items-center gap-2 rounded-xl bg-white/[0.04] border border-white/[0.08] px-6 py-3 text-sm font-medium text-white/60 hover:text-white hover:bg-white/[0.07] transition-all duration-300">
+              Get in Touch
+            </a>
+          </div>
+        </motion.div>
 
-            <motion.div
-              className="absolute -right-4 top-1/2 flex items-center gap-2 rounded-2xl glass border-gradient px-4 py-2.5 text-sm text-white/80"
-              animate={{ y: [0, 6, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            >
-              <Terminal className="h-4 w-4 text-blue-400" /> Red Teamer
-            </motion.div>
+        {/* Avatar card — spans 4 cols */}
+        <motion.div
+          {...fade(0.15)}
+          className="md:col-span-4 bento bento-accent overflow-hidden relative min-h-[340px]"
+        >
+          <img src={AVATAR} alt="Rajdip" className="absolute inset-0 h-full w-full object-cover" draggable="false" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-transparent to-transparent" />
+          <div className="absolute bottom-4 left-4 right-4">
+            <div className="flex items-center gap-2 text-sm text-white/60">
+              <MapPin className="h-3.5 w-3.5" /> India / Remote
+            </div>
+          </div>
+        </motion.div>
 
-            <motion.div
-              className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-2xl glass border-gradient px-4 py-2.5 text-sm text-white/80"
-              animate={{ y: [0, -5, 0] }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-            >
-              <Zap className="h-4 w-4 text-amber-400" /> Researcher
-            </motion.div>
+        {/* Stats row — 4 cards */}
+        <motion.div {...fade(0.25)} className="md:col-span-3 bento p-6 flex flex-col justify-center items-center text-center">
+          <div className="text-3xl font-bold text-white">4+</div>
+          <div className="text-xs text-white/30 mt-1">Years Experience</div>
+        </motion.div>
+
+        <motion.div {...fade(0.3)} className="md:col-span-3 bento p-6 flex flex-col justify-center items-center text-center">
+          <div className="text-3xl font-bold text-white">50+</div>
+          <div className="text-xs text-white/30 mt-1">Hall of Fame</div>
+        </motion.div>
+
+        <motion.div {...fade(0.35)} className="md:col-span-3 bento p-6 flex flex-col justify-center items-center text-center">
+          <div className="text-3xl font-bold text-white">2</div>
+          <div className="text-xs text-white/30 mt-1">Published CVEs</div>
+        </motion.div>
+
+        <motion.div {...fade(0.4)} className="md:col-span-3 bento p-6 flex flex-col justify-center items-center text-center">
+          <div className="text-3xl font-bold text-white">80+</div>
+          <div className="text-xs text-white/30 mt-1">Recognitions</div>
+        </motion.div>
+
+        {/* Role pills */}
+        <motion.div {...fade(0.45)} className="md:col-span-4 bento p-5 flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-violet-500/15 flex items-center justify-center text-violet-400">
+            <Shield className="h-5 w-5" />
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-white/90">Penetration Tester</div>
+            <div className="text-xs text-white/30">Web, API, Mobile, Cloud</div>
+          </div>
+        </motion.div>
+
+        <motion.div {...fade(0.5)} className="md:col-span-4 bento p-5 flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-blue-500/15 flex items-center justify-center text-blue-400">
+            <Terminal className="h-5 w-5" />
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-white/90">Red Teamer</div>
+            <div className="text-xs text-white/30">Adversary Simulation, AD</div>
+          </div>
+        </motion.div>
+
+        <motion.div {...fade(0.55)} className="md:col-span-4 bento p-5 flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-amber-500/15 flex items-center justify-center text-amber-400">
+            <Zap className="h-5 w-5" />
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-white/90">Security Researcher</div>
+            <div className="text-xs text-white/30">CVEs, Exploit Dev, Automation</div>
           </div>
         </motion.div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        <div className="h-10 w-6 rounded-full border border-white/10 flex justify-center pt-2">
-          <div className="h-2 w-1 rounded-full bg-white/30 animate-pulse" />
-        </div>
-      </motion.div>
     </section>
   );
 }

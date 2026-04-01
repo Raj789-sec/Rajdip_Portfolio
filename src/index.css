@@ -25,25 +25,15 @@ html {
 }
 
 .section {
-  padding-top: 2rem;
-  padding-bottom: 2rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
 }
 
 @media (min-width: 768px) {
-  .section {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-  }
+  .section { padding-top: 2rem; padding-bottom: 2rem; }
 }
 
-@media (min-width: 1024px) {
-  .section {
-    padding-top: 4rem;
-    padding-bottom: 4rem;
-  }
-}
-
-/* Premium gradient text utility */
+/* === Gradient text === */
 .gradient-text {
   background: linear-gradient(135deg, #fff 0%, #a78bfa 50%, #818cf8 100%);
   -webkit-background-clip: text;
@@ -51,43 +41,37 @@ html {
   -webkit-text-fill-color: transparent;
 }
 
-.gradient-text-blue {
-  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #c084fc 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Glass card */
-.glass {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
+/* === Bento Card === */
+.bento {
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 1.25rem;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.glass-hover:hover {
-  background: rgba(255, 255, 255, 0.05);
+.bento:hover {
+  background: rgba(255, 255, 255, 0.04);
   border-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
 }
 
-/* Subtle border gradient */
-.border-gradient {
+/* subtle top-left gradient border accent */
+.bento-accent {
   position: relative;
 }
-
-.border-gradient::before {
+.bento-accent::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(59, 130, 246, 0.1), transparent);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(59, 130, 246, 0.15), transparent 50%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
 }
 
-/* Smooth line clamp */
+/* Line clamp */
 .clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
