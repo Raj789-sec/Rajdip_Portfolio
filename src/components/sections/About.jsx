@@ -13,99 +13,81 @@ const INTERESTS = [
 ];
 
 const CERTS = [
-  { icon: <ShieldCheck className="h-5 w-5" />, title: "CRTP", subtitle: "Certified Red Teaming Professional", date: "ADLID96063", ctaText: "Verify Certificate", href: "https://www.credential.net/79c25d7c-e2ce-4c7b-8e8a-d9f37c4d1013" },
-  { icon: <TerminalSquare className="h-5 w-5" />, title: "eWPTxv2", subtitle: "eLearnSecurity Web Pentester eXtreme", date: "Valid until Mar 2028", ctaText: "Verify Certificate", href: "https://certs.ine.com/d4ac221f-7b89-44c8-9918-bb31cc89efad?record_view=true" },
-  { icon: <Cpu className="h-5 w-5" />, title: "CRTO", subtitle: "Certified Red Team Operator", date: "Issued on 4 Jan 2024", ctaText: "View Certificate", href: "https://eu.badgr.com/public/assertions/7Wr3jQrFQP6FOK6rZZUkYA?identity__email=Wcyber71@gmail.com&action=download" },
-  { icon: <ShieldCheck className="h-5 w-5" />, title: "CAP", subtitle: "Certified AppSec Practitioner", date: "View announcement", ctaText: "View Post", href: "https://www.linkedin.com/posts/rdsarkar_certified-appsec-practitioner-activity-7012447184361062400-gXl5" },
-  { icon: <ShieldCheck className="h-5 w-5" />, title: "CEH v11", subtitle: "Certified Ethical Hacker", date: "ECC6291753804", ctaText: "View Proof", href: "https://www.linkedin.com/in/rdsarkar/details/featured/1635468419676/single-media-viewer/?profileId=ACoAADA4H70BJdcbrjiwf_08MMvUzMOiVflnfVs" },
+  { icon: <ShieldCheck className="h-5 w-5" />, title: "CRTP", subtitle: "Certified Red Teaming Professional", date: "ADLID96063", ctaText: "Verify", href: "https://www.credential.net/79c25d7c-e2ce-4c7b-8e8a-d9f37c4d1013" },
+  { icon: <TerminalSquare className="h-5 w-5" />, title: "eWPTxv2", subtitle: "eLearnSecurity Web Pentester eXtreme", date: "Valid until Mar 2028", ctaText: "Verify", href: "https://certs.ine.com/d4ac221f-7b89-44c8-9918-bb31cc89efad?record_view=true" },
+  { icon: <Cpu className="h-5 w-5" />, title: "CRTO", subtitle: "Certified Red Team Operator", date: "Issued 4 Jan 2024", ctaText: "View", href: "https://eu.badgr.com/public/assertions/7Wr3jQrFQP6FOK6rZZUkYA?identity__email=Wcyber71@gmail.com&action=download" },
+  { icon: <ShieldCheck className="h-5 w-5" />, title: "CAP", subtitle: "Certified AppSec Practitioner", ctaText: "View", href: "https://www.linkedin.com/posts/rdsarkar_certified-appsec-practitioner-activity-7012447184361062400-gXl5" },
+  { icon: <ShieldCheck className="h-5 w-5" />, title: "CEH v11", subtitle: "Certified Ethical Hacker", date: "ECC6291753804", ctaText: "View", href: "https://www.linkedin.com/in/rdsarkar/details/featured/1635468419676/single-media-viewer/?profileId=ACoAADA4H70BJdcbrjiwf_08MMvUzMOiVflnfVs" },
 ];
+
+const fade = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+};
 
 export default function About() {
   return (
-    <section id="about" className="relative py-20 px-4 sm:px-6 md:px-8">
+    <section id="about" className="relative py-24 px-6">
       <div className="mx-auto w-full max-w-6xl">
-        {/* Heading */}
-        <div className="text-center mb-10">
-          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-white">
-            About Me
-          </h2>
-          <div className="mt-4 mx-auto h-0.5 w-16 rounded-full bg-blue-500" />
-        </div>
+        <SectionHeader label="About" title="Who I am." />
 
-        {/* Content */}
-        <div className="rounded-xl border border-slate-700/50 bg-slate-800/30 p-6 sm:p-10">
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-10%" }}
+          variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+        >
           {/* Summary */}
-          <SubHeading icon={<Trophy className="h-5 w-5 text-slate-300" />} text="Summary" />
-          <Card>
-            <p className="text-slate-300 leading-relaxed">{SUMMARY}</p>
+          <motion.div variants={fade} className="rounded-2xl glass border-gradient p-8 sm:p-10">
+            <p className="text-white/60 leading-relaxed text-base">{SUMMARY}</p>
 
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-5 flex flex-wrap gap-2">
               {["Tool Dev", "Automation", "AI + Sec", "Research", "Cloud/Containers"].map((t) => (
                 <span
                   key={t}
-                  className="rounded-full border border-slate-600 bg-slate-700/40 px-3 py-1 text-xs text-slate-300 transition-colors hover:border-blue-500/40"
+                  className="rounded-full bg-white/[0.04] border border-white/[0.08] px-3.5 py-1.5 text-xs text-white/40 transition-all duration-300 hover:text-white/70 hover:border-white/[0.15]"
                 >
                   {t}
                 </span>
               ))}
             </div>
 
-            <div className="mt-5 flex flex-wrap items-center gap-2 text-sm text-slate-400">
-              <Sparkles className="h-4 w-4 text-blue-400" />
-              <span className="font-semibold text-slate-300">Interests:</span>
+            <div className="mt-5 flex flex-wrap items-center gap-2 text-sm text-white/40">
+              <Sparkles className="h-4 w-4 text-violet-400" />
+              <span className="font-medium text-white/60">Interests:</span>
               {INTERESTS.map((it, i) => (
                 <span key={it}>
-                  {it}{i < INTERESTS.length - 1 ? "," : ""}
+                  {it}{i < INTERESTS.length - 1 ? " ·" : ""}
                 </span>
               ))}
             </div>
-          </Card>
+          </motion.div>
 
-          {/* Divider */}
-          <div className="my-10 mx-auto w-16 h-px bg-slate-700" />
-
-          {/* Certifications */}
-          <SubHeading icon={<ShieldCheck className="h-5 w-5 text-slate-300" />} text="Professional Certifications" />
-          <div className="grid gap-6 md:grid-cols-2">
-            {CERTS.map((c, i) => (
-              <GlowCard
-                key={i}
-                icon={c.icon}
-                title={c.title}
-                subtitle={c.subtitle}
-                date={c.date}
-                ctaText={c.ctaText}
-                href={c.href}
-              />
-            ))}
-          </div>
-        </div>
+          {/* Certs */}
+          <motion.div variants={fade} className="mt-10">
+            <h3 className="text-lg font-semibold text-white/70 mb-6 flex items-center gap-3">
+              <ShieldCheck className="h-5 w-5 text-violet-400" />
+              Professional Certifications
+            </h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              {CERTS.map((c, i) => (
+                <GlowCard key={i} {...c} />
+              ))}
+            </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-function SubHeading({ icon, text }) {
+function SectionHeader({ label, title }) {
   return (
-    <div className="mb-6">
-      <div className="flex items-center gap-3">
-        <div className="h-2 w-2 rounded-full bg-blue-500" />
-        <div className="shrink-0">{icon}</div>
-        <h3 className="text-xl font-semibold text-white">{text}</h3>
-      </div>
-      <div className="mt-3 h-px w-16 bg-blue-500/50" />
+    <div className="mb-12">
+      <p className="text-sm font-medium text-violet-400/80 tracking-wide uppercase mb-3">{label}</p>
+      <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">
+        <span className="gradient-text">{title}</span>
+      </h2>
     </div>
-  );
-}
-
-function Card({ children }) {
-  return (
-    <motion.div
-      whileHover={{ y: -2 }}
-      transition={{ type: "spring", stiffness: 250, damping: 20 }}
-      className="rounded-xl border border-slate-700 bg-slate-800/60 p-5 sm:p-6"
-    >
-      {children}
-    </motion.div>
   );
 }

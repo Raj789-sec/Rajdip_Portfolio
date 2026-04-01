@@ -1,6 +1,6 @@
 export const YOU = {
   name: "Rajdip Dey Sarkar",
-  role: "Security Consultant | Penetration Tester",
+  role: "Security Consultant",
   tagline:
     "Offensive security specialist with 4+ years across web, API, mobile, and Active Directory. 50+ Hall of Fame recognitions, published CVEs, and CTF wins. Available for penetration testing, red teaming, and security consulting engagements.",
   ctaProjectsHref: "#projects",
@@ -15,9 +15,8 @@ export const YOU = {
 };
 
 export const theme = {
-  frame:
-    "rounded-xl border border-slate-700/50 bg-slate-800/50 backdrop-blur-sm",
-  accent: "text-blue-400",
+  frame: "rounded-2xl glass border-gradient",
+  accent: "text-violet-400",
   linkBtn:
-    "inline-flex items-center gap-2 rounded-lg border border-blue-500/30 bg-blue-500/10 px-5 py-3 text-sm font-semibold text-blue-400 hover:bg-blue-500/20 transition-colors",
+    "inline-flex items-center gap-2 rounded-xl bg-white/[0.04] border border-white/[0.08] px-5 py-3 text-sm font-medium text-white/90 hover:bg-white/[0.08] hover:border-white/[0.12] transition-all duration-300",
 };

@@ -36,14 +36,13 @@ export default function HOFMarquee({ items, speed = 50, height = 64, gap = 56 })
 
   return (
     <div className="relative w-full py-2">
-      <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+      <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
         <div
           ref={trackRef}
           className={`flex flex-nowrap items-center will-change-transform ${ready ? "hof-animate" : ""}`}
           style={{ transform: "translateZ(0)" }}
           aria-label="Hall of Fame logos"
         >
-          {/* Set A */}
           <ul ref={setRef} className="flex flex-nowrap items-center shrink-0" style={{ columnGap: `${gap}px`, height }}>
             {items.map((it, i) => (
               <li key={`a-${i}`} className="shrink-0 flex items-center justify-center">
@@ -52,15 +51,12 @@ export default function HOFMarquee({ items, speed = 50, height = 64, gap = 56 })
                   alt={it.name}
                   title={it.name}
                   style={{ maxHeight: height }}
-                  className="w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-300"
+                  className="w-auto object-contain opacity-40 grayscale hover:opacity-80 hover:grayscale-0 transition-all duration-500"
                 />
               </li>
             ))}
           </ul>
-
           <div className="shrink-0" style={{ width: gap }} aria-hidden />
-
-          {/* Set B (duplicate) */}
           <ul className="flex flex-nowrap items-center shrink-0" style={{ columnGap: `${gap}px`, height }} aria-hidden>
             {items.map((it, i) => (
               <li key={`b-${i}`} className="shrink-0 flex items-center justify-center">
@@ -68,7 +64,7 @@ export default function HOFMarquee({ items, speed = 50, height = 64, gap = 56 })
                   src={it.logo}
                   alt={it.name}
                   style={{ maxHeight: height }}
-                  className="w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-300"
+                  className="w-auto object-contain opacity-40 grayscale hover:opacity-80 hover:grayscale-0 transition-all duration-500"
                 />
               </li>
             ))}
