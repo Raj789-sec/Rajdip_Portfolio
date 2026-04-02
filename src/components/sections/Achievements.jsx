@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Globe, Trophy, Zap, Shield } from "lucide-react";
+import { Trophy, Zap } from "lucide-react";
 import HOFMarquee from "./HOFMarquee";
 
 import BBCLogo from "../../assets/BBC.png";
@@ -43,106 +43,93 @@ const HOF_ITEMS = [
 ];
 
 const STATS = [
-  { value: "80+", label: "Acknowledgments", icon: Shield },
-  { value: "18+", label: "Organizations", icon: Globe },
-  { value: "1st", label: "Place — NB CTF", icon: Trophy },
-  { value: "Top 1%", label: "TryHackMe", icon: Zap },
+  { value: "80+", label: "Security Acknowledgments", color: "from-violet-400 to-purple-600" },
+  { value: "18+", label: "Global Organizations", color: "from-blue-400 to-cyan-500" },
+  { value: "#1", label: "North Bengal CTF", color: "from-amber-400 to-orange-500" },
+  { value: "1%", label: "TryHackMe Global", color: "from-emerald-400 to-teal-500" },
 ];
 
 const fade = (d = 0) => ({
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
-  transition: { duration: 0.6, delay: d, ease: [0.22, 1, 0.36, 1] },
+  transition: { duration: 0.7, delay: d, ease: [0.22, 1, 0.36, 1] },
 });
 
 export default function Achievements() {
   return (
-    <section id="Achievements" className="relative py-20 px-6 scroll-mt-28">
-      <div className="mx-auto max-w-6xl">
-        <motion.div {...fade()}>
-          <p className="text-sm font-medium text-violet-400/80 tracking-wide uppercase mb-3">Recognition</p>
-          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-12">
+    <section id="Achievements" className="relative py-24 px-6 scroll-mt-28 overflow-hidden">
+      {/* Background ambient glows */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] pointer-events-none"
+           style={{ background: "radial-gradient(ellipse at center, rgba(139,92,246,0.08) 0%, transparent 70%)" }} />
+      <div className="absolute top-0 right-0 w-[400px] h-[400px] pointer-events-none"
+           style={{ background: "radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%)" }} />
+
+      <div className="mx-auto max-w-6xl relative z-10">
+        {/* Header */}
+        <motion.div {...fade()} className="text-center mb-16">
+          <p className="text-sm font-medium text-violet-400/80 tracking-widest uppercase mb-4">Recognition</p>
+          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight">
             <span className="gradient-text">Hall of Fame.</span>
           </h2>
+          <p className="mt-4 text-white/30 max-w-xl mx-auto text-sm leading-relaxed">
+            Recognized by leading organizations worldwide for responsibly disclosing security vulnerabilities.
+          </p>
         </motion.div>
 
-        {/* Stats row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        {/* Stats — large gradient numbers */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-20">
           {STATS.map((s, i) => (
-            <motion.div
-              key={s.label}
-              {...fade(0.08 * i)}
-              className="bento p-5 text-center group"
-            >
-              <s.icon className="h-4 w-4 mx-auto mb-3 text-violet-400/50 group-hover:text-violet-400 transition-colors" />
-              <div className="text-2xl sm:text-3xl font-bold text-white/90 tracking-tight">{s.value}</div>
-              <div className="text-[11px] text-white/30 mt-1 font-medium uppercase tracking-wider">{s.label}</div>
+            <motion.div key={s.label} {...fade(0.1 + i * 0.08)} className="text-center group">
+              <div className={`text-5xl sm:text-6xl lg:text-7xl font-extrabold bg-gradient-to-br ${s.color} bg-clip-text text-transparent leading-none tracking-tighter`}>
+                {s.value}
+              </div>
+              <div className="text-[11px] text-white/30 mt-3 font-medium uppercase tracking-widest group-hover:text-white/50 transition-colors">
+                {s.label}
+              </div>
             </motion.div>
           ))}
         </div>
 
-        {/* HOF Marquee — full width with glow */}
-        <motion.div {...fade(0.15)} className="relative bento bento-accent p-8 mb-6 overflow-hidden">
-          {/* Ambient glow behind logos */}
-          <div className="absolute inset-0 opacity-30 pointer-events-none"
-               style={{ background: "radial-gradient(ellipse 60% 40% at 50% 60%, rgba(139,92,246,0.15), transparent)" }} />
-
-          <p className="text-sm text-white/40 mb-6 max-w-2xl relative z-10">
-            Recognized by <span className="text-white/70 font-medium">Apple, Microsoft, Sony, BBC, Yahoo, Mastercard, U.S. DoD, United Nations, Government of India</span> and more for responsibly disclosing security vulnerabilities.
-          </p>
-          <div className="relative z-10">
-            <HOFMarquee items={HOF_ITEMS} speed={50} height={52} gap={52} />
+        {/* Marquee with edge fade */}
+        <motion.div {...fade(0.3)} className="relative mb-20">
+          <div className="absolute -inset-x-6 -inset-y-8 rounded-3xl pointer-events-none"
+               style={{ background: "linear-gradient(180deg, rgba(139,92,246,0.04) 0%, rgba(59,130,246,0.02) 50%, transparent 100%)" }} />
+          <div className="relative">
+            <HOFMarquee items={HOF_ITEMS} speed={45} height={56} gap={56} />
+            <div className="mt-4">
+              <HOFMarquee items={[...HOF_ITEMS].reverse()} speed={55} height={56} gap={56} />
+            </div>
           </div>
         </motion.div>
 
-        {/* CTFs + Platforms — side by side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <motion.div {...fade(0.25)} className="bento p-6">
-            <div className="flex items-center gap-2 mb-5">
-              <Trophy className="h-4 w-4 text-amber-400" />
-              <h3 className="text-sm font-semibold text-white/60">CTF Highlights</h3>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between group">
-                <span className="text-sm text-white/70 group-hover:text-white/90 transition-colors">North Bengal CTF</span>
-                <span className="rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-0.5 text-[11px] font-semibold text-amber-400">
-                  1st Place
-                </span>
-              </div>
-              <div className="w-full h-px bg-white/[0.04]" />
-              <div className="flex items-center justify-between group">
-                <span className="text-sm text-white/70 group-hover:text-white/90 transition-colors">Kolkata Police CTF</span>
-                <span className="rounded-full bg-violet-500/10 border border-violet-500/20 px-3 py-0.5 text-[11px] font-semibold text-violet-400">
-                  Top 5
-                </span>
-              </div>
-            </div>
-          </motion.div>
+        {/* CTF + Platforms — minimal pill style */}
+        <motion.div {...fade(0.4)} className="flex flex-wrap items-center justify-center gap-3">
+          <div className="flex items-center gap-3 rounded-full border border-white/[0.06] bg-white/[0.02] px-6 py-3 backdrop-blur-sm hover:border-amber-500/20 hover:bg-amber-500/[0.03] transition-all duration-500 group">
+            <Trophy className="h-4 w-4 text-amber-400/60 group-hover:text-amber-400 transition-colors" />
+            <span className="text-sm text-white/50 group-hover:text-white/80 transition-colors">North Bengal CTF</span>
+            <span className="text-xs font-bold text-amber-400">Winner</span>
+          </div>
 
-          <motion.div {...fade(0.3)} className="bento p-6">
-            <div className="flex items-center gap-2 mb-5">
-              <Zap className="h-4 w-4 text-emerald-400" />
-              <h3 className="text-sm font-semibold text-white/60">Platforms</h3>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between group">
-                <span className="text-sm text-white/70 group-hover:text-white/90 transition-colors">Hack The Box</span>
-                <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-0.5 text-[11px] font-semibold text-emerald-400">
-                  Pro Hacker
-                </span>
-              </div>
-              <div className="w-full h-px bg-white/[0.04]" />
-              <div className="flex items-center justify-between group">
-                <span className="text-sm text-white/70 group-hover:text-white/90 transition-colors">TryHackMe</span>
-                <a href="https://tryhackme.com/p/Raj7" target="_blank" rel="noreferrer"
-                   className="rounded-full bg-blue-500/10 border border-blue-500/20 px-3 py-0.5 text-[11px] font-semibold text-blue-400 hover:bg-blue-500/20 transition-colors">
-                  Top 1% ↗
-                </a>
-              </div>
-            </div>
-          </motion.div>
-        </div>
+          <div className="flex items-center gap-3 rounded-full border border-white/[0.06] bg-white/[0.02] px-6 py-3 backdrop-blur-sm hover:border-violet-500/20 hover:bg-violet-500/[0.03] transition-all duration-500 group">
+            <Trophy className="h-4 w-4 text-violet-400/60 group-hover:text-violet-400 transition-colors" />
+            <span className="text-sm text-white/50 group-hover:text-white/80 transition-colors">Kolkata Police CTF</span>
+            <span className="text-xs font-bold text-violet-400">Top 5</span>
+          </div>
+
+          <div className="flex items-center gap-3 rounded-full border border-white/[0.06] bg-white/[0.02] px-6 py-3 backdrop-blur-sm hover:border-emerald-500/20 hover:bg-emerald-500/[0.03] transition-all duration-500 group">
+            <Zap className="h-4 w-4 text-emerald-400/60 group-hover:text-emerald-400 transition-colors" />
+            <span className="text-sm text-white/50 group-hover:text-white/80 transition-colors">Hack The Box</span>
+            <span className="text-xs font-bold text-emerald-400">Pro Hacker</span>
+          </div>
+
+          <a href="https://tryhackme.com/p/Raj7" target="_blank" rel="noreferrer"
+             className="flex items-center gap-3 rounded-full border border-white/[0.06] bg-white/[0.02] px-6 py-3 backdrop-blur-sm hover:border-blue-500/20 hover:bg-blue-500/[0.03] transition-all duration-500 group">
+            <Zap className="h-4 w-4 text-blue-400/60 group-hover:text-blue-400 transition-colors" />
+            <span className="text-sm text-white/50 group-hover:text-white/80 transition-colors">TryHackMe</span>
+            <span className="text-xs font-bold text-blue-400">Top 1% ↗</span>
+          </a>
+        </motion.div>
       </div>
     </section>
   );
