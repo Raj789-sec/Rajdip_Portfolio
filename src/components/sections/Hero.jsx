@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, memo } from "react";
 import { motion } from "framer-motion";
 import { ArrowDown, ChevronRight } from "lucide-react";
 
@@ -52,8 +52,8 @@ function useTypingEffect(words, typeSpeed = 80, deleteSpeed = 40, pause = 2200) 
   return text;
 }
 
-/* ── Interactive network canvas ── */
-function NetworkCanvas() {
+/* ── Lightweight network canvas — 30 nodes, no mouse interaction ── */
+const NetworkCanvas = memo(function NetworkCanvas() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -62,98 +62,90 @@ function NetworkCanvas() {
     const ctx = canvas.getContext("2d");
     let raf;
     let nodes = [];
-    let mouse = { x: -999, y: -999 };
+    const COUNT = 30;
+    const LINK_DIST = 120;
 
     const resize = () => {
-      canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
-      canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
-      ctx.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio || 1, 0, 0);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = canvas.offsetWidth * dpr;
+      canvas.height = canvas.offsetHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
     const init = () => {
       resize();
       const w = canvas.offsetWidth;
       const h = canvas.offsetHeight;
-      nodes = Array.from({ length: 60 }, () => ({
+      nodes = Array.from({ length: COUNT }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,
-        r: Math.random() * 1.6 + 0.3,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        o: Math.random() * 0.3 + 0.08,
+        r: Math.random() * 1.5 + 0.3,
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: (Math.random() - 0.5) * 0.25,
+        o: Math.random() * 0.25 + 0.08,
       }));
     };
-
-    const onMove = (e) => {
-      const rect = canvas.getBoundingClientRect();
-      mouse = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-    };
-    const onLeave = () => { mouse = { x: -999, y: -999 }; };
 
     const draw = () => {
       const w = canvas.offsetWidth;
       const h = canvas.offsetHeight;
       ctx.clearRect(0, 0, w, h);
 
-      nodes.forEach((n) => {
-        const dx = n.x - mouse.x;
-        const dy = n.y - mouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 120 && dist > 0) {
-          n.vx += (dx / dist) * 0.1;
-          n.vy += (dy / dist) * 0.1;
-        }
-        n.vx *= 0.99;
-        n.vy *= 0.99;
+      // Move nodes
+      for (let i = 0; i < COUNT; i++) {
+        const n = nodes[i];
         n.x += n.vx;
         n.y += n.vy;
         if (n.x < 0) n.x = w;
         if (n.x > w) n.x = 0;
         if (n.y < 0) n.y = h;
         if (n.y > h) n.y = 0;
+      }
 
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(139, 92, 246, ${n.o})`;
-        ctx.fill();
-      });
-
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const ddx = nodes[i].x - nodes[j].x;
-          const ddy = nodes[i].y - nodes[j].y;
-          const d = Math.sqrt(ddx * ddx + ddy * ddy);
-          if (d < 130) {
+      // Draw connections
+      ctx.lineWidth = 0.4;
+      for (let i = 0; i < COUNT; i++) {
+        for (let j = i + 1; j < COUNT; j++) {
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < LINK_DIST * LINK_DIST) {
+            const d = Math.sqrt(d2);
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(139, 92, 246, ${0.06 * (1 - d / 130)})`;
-            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = `rgba(139,92,246,${0.06 * (1 - d / LINK_DIST)})`;
             ctx.stroke();
           }
         }
       }
+
+      // Draw dots
+      for (let i = 0; i < COUNT; i++) {
+        const n = nodes[i];
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, 6.283);
+        ctx.fillStyle = `rgba(139,92,246,${n.o})`;
+        ctx.fill();
+      }
+
       raf = requestAnimationFrame(draw);
     };
 
     init();
     draw();
-    canvas.addEventListener("mousemove", onMove);
-    canvas.addEventListener("mouseleave", onLeave);
     window.addEventListener("resize", init);
     return () => {
       cancelAnimationFrame(raf);
-      canvas.removeEventListener("mousemove", onMove);
-      canvas.removeEventListener("mouseleave", onLeave);
       window.removeEventListener("resize", init);
     };
   }, []);
 
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
-}
+});
 
-/* ── Full terminal ── */
-function FullTerminal() {
+/* ── Terminal ── */
+const FullTerminal = memo(function FullTerminal() {
   const [visibleLines, setVisibleLines] = useState(0);
   const bodyRef = useRef(null);
 
@@ -176,10 +168,6 @@ function FullTerminal() {
       transition={{ duration: 0.9, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
       className="w-full"
     >
-      {/* Glow */}
-      <div className="absolute -inset-3 rounded-2xl blur-2xl opacity-20 pointer-events-none -z-10"
-           style={{ background: "conic-gradient(from 200deg, #7c3aed, #3b82f6, #7c3aed)" }} />
-
       <div className="rounded-2xl border border-white/[0.08] bg-[#0b0b14]/90 backdrop-blur-xl overflow-hidden shadow-2xl shadow-violet-500/5">
         {/* Title bar */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.05] bg-white/[0.015]">
@@ -232,7 +220,7 @@ function FullTerminal() {
       </div>
     </motion.div>
   );
-}
+});
 
 /* ── Glitch text ── */
 function GlitchText({ text, className }) {
@@ -258,14 +246,11 @@ export default function Hero() {
     <section id="home" className="relative min-h-[100dvh] flex flex-col justify-center px-6 overflow-hidden">
       <NetworkCanvas />
 
-      {/* Ambient */}
+      {/* Ambient — pure CSS, no animation overhead */}
       <div className="absolute top-0 left-1/4 w-[700px] h-[700px] pointer-events-none"
            style={{ background: "radial-gradient(circle, rgba(124,58,237,0.1), transparent 60%)" }} />
       <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] pointer-events-none"
            style={{ background: "radial-gradient(circle, rgba(59,130,246,0.07), transparent 60%)" }} />
-
-      {/* Scan line */}
-      <div className="hero-scanline absolute inset-0 pointer-events-none overflow-hidden z-[1]" />
 
       <div className="relative z-10 mx-auto max-w-5xl w-full">
         {/* ── TOP: Name & CTAs ── */}
@@ -306,15 +291,11 @@ export default function Hero() {
           {/* CTAs */}
           <motion.div {...fade(0.6)} className="mt-8 flex flex-wrap justify-center gap-3">
             <a href="#services"
-               className="group relative inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-semibold text-white overflow-hidden transition-all duration-500 hover:-translate-y-0.5">
-              <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-blue-600 to-violet-600 bg-[length:200%_100%] animate-gradient-x rounded-full" />
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-600 to-blue-600 blur-xl opacity-40 group-hover:opacity-60 transition-opacity" />
-              <span className="relative z-10 flex items-center gap-2">
-                View Services <ArrowDown className="h-3.5 w-3.5 group-hover:translate-y-0.5 transition-transform" />
-              </span>
+               className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-blue-600 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40 transition-all duration-300 hover:-translate-y-0.5">
+              View Services <ArrowDown className="h-3.5 w-3.5 group-hover:translate-y-0.5 transition-transform" />
             </a>
             <a href="#about"
-               className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-8 py-3.5 text-sm font-medium text-white/50 hover:text-white hover:border-violet-500/25 hover:bg-violet-500/[0.04] backdrop-blur-sm transition-all duration-500">
+               className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-8 py-3.5 text-sm font-medium text-white/50 hover:text-white hover:border-violet-500/25 hover:bg-violet-500/[0.04] backdrop-blur-sm transition-all duration-300">
               Learn More <ChevronRight className="h-3.5 w-3.5" />
             </a>
           </motion.div>
@@ -358,17 +339,10 @@ export default function Hero() {
         </a>
       </motion.div>
 
-      {/* Styles */}
+      {/* Minimal styles — no scan line, no heavy animations */}
       <style>{`
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        .animate-blink { animation: blink 0.8s ease-in-out infinite; }
-
-        @keyframes gradient-x {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        .animate-gradient-x { animation: gradient-x 3s ease infinite; }
+        .animate-blink { animation: blink 0.8s step-end infinite; }
 
         .hero-glitch { position: relative; }
         .hero-glitch::before,
@@ -378,39 +352,26 @@ export default function Hero() {
           top: 0; left: 0;
           width: 100%; height: 100%;
           opacity: 0;
+          will-change: opacity, transform;
         }
         .hero-glitch::before {
           color: #a78bfa;
-          animation: g1 3.5s ease-in-out infinite;
+          animation: g1 4s ease-in-out infinite;
         }
         .hero-glitch::after {
           color: #60a5fa;
-          animation: g2 3.5s ease-in-out infinite;
+          animation: g2 4s ease-in-out infinite;
         }
         @keyframes g1 {
-          0%, 90%, 100% { opacity: 0; transform: translate(0); }
-          91% { opacity: 0.8; transform: translate(-4px, 2px); }
-          92% { opacity: 0; }
-          94% { opacity: 0.6; transform: translate(3px, -1px); }
-          95% { opacity: 0; }
-        }
-        @keyframes g2 {
-          0%, 88%, 100% { opacity: 0; transform: translate(0); }
-          89% { opacity: 0.7; transform: translate(4px, -2px); }
-          90% { opacity: 0; }
-          93% { opacity: 0.5; transform: translate(-3px, 2px); }
+          0%, 92%, 100% { opacity: 0; transform: translate3d(0,0,0); }
+          93% { opacity: 0.7; transform: translate3d(-3px,1px,0); }
           94% { opacity: 0; }
         }
-
-        .hero-scanline::after {
-          content: "";
-          position: absolute;
-          left: 0; right: 0;
-          height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(139,92,246,0.12), transparent);
-          animation: scanmove 6s linear infinite;
+        @keyframes g2 {
+          0%, 90%, 100% { opacity: 0; transform: translate3d(0,0,0); }
+          91% { opacity: 0.6; transform: translate3d(3px,-1px,0); }
+          92% { opacity: 0; }
         }
-        @keyframes scanmove { 0% { top: -2px; } 100% { top: 100%; } }
 
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
