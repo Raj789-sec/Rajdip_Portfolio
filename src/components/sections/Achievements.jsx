@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
-import { Trophy, Zap } from "lucide-react";
-import HOFMarquee from "./HOFMarquee";
+import { Trophy, Zap, Shield, Globe } from "lucide-react";
 
 import BBCLogo from "../../assets/BBC.png";
 import HuaweiLogo from "../../assets/huawei.png";
@@ -31,7 +30,7 @@ const HOF_ITEMS = [
   { name: "United Nations", logo: UNLogo },
   { name: "US DoD", logo: UsdodLogo },
   { name: "Govt. of India", logo: IndiaGovtLogo },
-  { name: "Govt. of Netherlands", logo: DutchGovtLogo },
+  { name: "Netherlands", logo: DutchGovtLogo },
   { name: "Philips", logo: PhilipsLogo },
   { name: "Nokia", logo: NokiaLogo },
   { name: "LG", logo: LGLogo },
@@ -43,91 +42,115 @@ const HOF_ITEMS = [
 ];
 
 const STATS = [
-  { value: "80+", label: "Security Acknowledgments", color: "from-violet-400 to-purple-600" },
-  { value: "18+", label: "Global Organizations", color: "from-blue-400 to-cyan-500" },
-  { value: "#1", label: "North Bengal CTF", color: "from-amber-400 to-orange-500" },
-  { value: "1%", label: "TryHackMe Global", color: "from-emerald-400 to-teal-500" },
+  { value: "80+", label: "Hall of Fames", icon: <Shield className="h-5 w-5" />, color: "violet" },
+  { value: "18+", label: "Organizations", icon: <Globe className="h-5 w-5" />, color: "blue" },
+  { value: "#1", label: "North Bengal CTF", icon: <Trophy className="h-5 w-5" />, color: "amber" },
+  { value: "1%", label: "TryHackMe Global", icon: <Zap className="h-5 w-5" />, color: "emerald" },
 ];
 
+const statColors = {
+  violet: { bg: "bg-violet-500/10", text: "text-violet-400", border: "border-violet-500/15", glow: "shadow-violet-500/10" },
+  blue: { bg: "bg-blue-500/10", text: "text-blue-400", border: "border-blue-500/15", glow: "shadow-blue-500/10" },
+  amber: { bg: "bg-amber-500/10", text: "text-amber-400", border: "border-amber-500/15", glow: "shadow-amber-500/10" },
+  emerald: { bg: "bg-emerald-500/10", text: "text-emerald-400", border: "border-emerald-500/15", glow: "shadow-emerald-500/10" },
+};
+
 const fade = (d = 0) => ({
-  initial: { opacity: 0, y: 24 },
+  initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
-  transition: { duration: 0.7, delay: d, ease: [0.22, 1, 0.36, 1] },
+  transition: { duration: 0.6, delay: d, ease: [0.22, 1, 0.36, 1] },
 });
 
 export default function Achievements() {
   return (
     <section id="Achievements" className="relative py-24 px-6 scroll-mt-28 overflow-hidden">
-      {/* Background ambient glows */}
+      {/* Background */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] pointer-events-none"
-           style={{ background: "radial-gradient(ellipse at center, rgba(139,92,246,0.08) 0%, transparent 70%)" }} />
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] pointer-events-none"
-           style={{ background: "radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%)" }} />
+           style={{ background: "radial-gradient(ellipse at center, rgba(139,92,246,0.06) 0%, transparent 70%)" }} />
 
       <div className="mx-auto max-w-6xl relative z-10">
         {/* Header */}
-        <motion.div {...fade()} className="text-center mb-16">
+        <motion.div {...fade()} className="text-center mb-14">
           <p className="text-sm font-medium text-violet-400/80 tracking-widest uppercase mb-4">Recognition</p>
           <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight">
             <span className="gradient-text">Hall of Fame.</span>
           </h2>
-          <p className="mt-4 text-white/30 max-w-xl mx-auto text-sm leading-relaxed">
+          <p className="mt-4 text-white/25 max-w-xl mx-auto text-sm leading-relaxed">
             Recognized by leading organizations worldwide for responsibly disclosing security vulnerabilities.
           </p>
         </motion.div>
 
-        {/* Stats — large gradient numbers */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-20">
-          {STATS.map((s, i) => (
-            <motion.div key={s.label} {...fade(0.1 + i * 0.08)} className="text-center group">
-              <div className={`text-5xl sm:text-6xl lg:text-7xl font-extrabold bg-gradient-to-br ${s.color} bg-clip-text text-transparent leading-none tracking-tighter`}>
-                {s.value}
+        {/* Stats row */}
+        <motion.div {...fade(0.1)} className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-16">
+          {STATS.map((s) => {
+            const c = statColors[s.color];
+            return (
+              <div key={s.label}
+                   className={`relative rounded-2xl border ${c.border} ${c.bg} p-5 text-center group hover:scale-[1.02] transition-all duration-500 shadow-lg ${c.glow}`}>
+                <div className={`h-10 w-10 rounded-xl ${c.bg} ${c.text} flex items-center justify-center mx-auto mb-3`}>
+                  {s.icon}
+                </div>
+                <div className={`text-3xl sm:text-4xl font-extrabold ${c.text}`}>{s.value}</div>
+                <div className="text-[10px] text-white/25 tracking-widest uppercase mt-1.5 font-medium">{s.label}</div>
               </div>
-              <div className="text-[11px] text-white/30 mt-3 font-medium uppercase tracking-widest group-hover:text-white/50 transition-colors">
-                {s.label}
-              </div>
-            </motion.div>
-          ))}
-        </div>
+            );
+          })}
+        </motion.div>
 
-        {/* Marquee with edge fade */}
-        <motion.div {...fade(0.3)} className="relative mb-20">
-          <div className="absolute -inset-x-6 -inset-y-8 rounded-3xl pointer-events-none"
-               style={{ background: "linear-gradient(180deg, rgba(139,92,246,0.04) 0%, rgba(59,130,246,0.02) 50%, transparent 100%)" }} />
-          <div className="relative">
-            <HOFMarquee items={HOF_ITEMS} speed={45} height={56} gap={56} />
-            <div className="mt-4">
-              <HOFMarquee items={[...HOF_ITEMS].reverse()} speed={55} height={56} gap={56} />
-            </div>
+        {/* Logo grid — always colorful */}
+        <motion.div {...fade(0.2)}>
+          <h3 className="text-sm font-medium text-white/30 tracking-widest uppercase mb-6 text-center">Trusted By</h3>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+            {HOF_ITEMS.map((item, i) => (
+              <motion.div
+                key={item.name}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.02 * i, ease: [0.22, 1, 0.36, 1] }}
+                className="group relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 flex flex-col items-center justify-center gap-2.5 hover:bg-white/[0.05] hover:border-violet-500/15 hover:shadow-lg hover:shadow-violet-500/5 transition-all duration-500 hover:-translate-y-1"
+              >
+                <div className="h-10 w-auto flex items-center justify-center">
+                  <img
+                    src={item.logo}
+                    alt={item.name}
+                    className="max-h-10 w-auto object-contain brightness-100"
+                  />
+                </div>
+                <span className="text-[10px] text-white/30 font-medium tracking-wide group-hover:text-white/60 transition-colors">
+                  {item.name}
+                </span>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
 
-        {/* CTF + Platforms — minimal pill style */}
-        <motion.div {...fade(0.4)} className="flex flex-wrap items-center justify-center gap-3">
-          <div className="flex items-center gap-3 rounded-full border border-white/[0.06] bg-white/[0.02] px-6 py-3 backdrop-blur-sm hover:border-amber-500/20 hover:bg-amber-500/[0.03] transition-all duration-500 group">
-            <Trophy className="h-4 w-4 text-amber-400/60 group-hover:text-amber-400 transition-colors" />
-            <span className="text-sm text-white/50 group-hover:text-white/80 transition-colors">North Bengal CTF</span>
-            <span className="text-xs font-bold text-amber-400">Winner</span>
+        {/* CTF + Platforms */}
+        <motion.div {...fade(0.3)} className="mt-14 flex flex-wrap items-center justify-center gap-3">
+          <div className="flex items-center gap-3 rounded-full border border-amber-500/10 bg-amber-500/[0.04] px-5 py-2.5 group hover:bg-amber-500/[0.08] transition-all duration-500">
+            <Trophy className="h-4 w-4 text-amber-400" />
+            <span className="text-sm text-white/60">North Bengal CTF</span>
+            <span className="text-xs font-bold text-amber-400 bg-amber-400/10 rounded-full px-2 py-0.5">Winner</span>
           </div>
 
-          <div className="flex items-center gap-3 rounded-full border border-white/[0.06] bg-white/[0.02] px-6 py-3 backdrop-blur-sm hover:border-violet-500/20 hover:bg-violet-500/[0.03] transition-all duration-500 group">
-            <Trophy className="h-4 w-4 text-violet-400/60 group-hover:text-violet-400 transition-colors" />
-            <span className="text-sm text-white/50 group-hover:text-white/80 transition-colors">Kolkata Police CTF</span>
-            <span className="text-xs font-bold text-violet-400">Top 5</span>
+          <div className="flex items-center gap-3 rounded-full border border-violet-500/10 bg-violet-500/[0.04] px-5 py-2.5 group hover:bg-violet-500/[0.08] transition-all duration-500">
+            <Trophy className="h-4 w-4 text-violet-400" />
+            <span className="text-sm text-white/60">Kolkata Police CTF</span>
+            <span className="text-xs font-bold text-violet-400 bg-violet-400/10 rounded-full px-2 py-0.5">Top 5</span>
           </div>
 
-          <div className="flex items-center gap-3 rounded-full border border-white/[0.06] bg-white/[0.02] px-6 py-3 backdrop-blur-sm hover:border-emerald-500/20 hover:bg-emerald-500/[0.03] transition-all duration-500 group">
-            <Zap className="h-4 w-4 text-emerald-400/60 group-hover:text-emerald-400 transition-colors" />
-            <span className="text-sm text-white/50 group-hover:text-white/80 transition-colors">Hack The Box</span>
-            <span className="text-xs font-bold text-emerald-400">Pro Hacker</span>
+          <div className="flex items-center gap-3 rounded-full border border-emerald-500/10 bg-emerald-500/[0.04] px-5 py-2.5 group hover:bg-emerald-500/[0.08] transition-all duration-500">
+            <Zap className="h-4 w-4 text-emerald-400" />
+            <span className="text-sm text-white/60">Hack The Box</span>
+            <span className="text-xs font-bold text-emerald-400 bg-emerald-400/10 rounded-full px-2 py-0.5">Pro Hacker</span>
           </div>
 
           <a href="https://tryhackme.com/p/Raj7" target="_blank" rel="noreferrer"
-             className="flex items-center gap-3 rounded-full border border-white/[0.06] bg-white/[0.02] px-6 py-3 backdrop-blur-sm hover:border-blue-500/20 hover:bg-blue-500/[0.03] transition-all duration-500 group">
-            <Zap className="h-4 w-4 text-blue-400/60 group-hover:text-blue-400 transition-colors" />
-            <span className="text-sm text-white/50 group-hover:text-white/80 transition-colors">TryHackMe</span>
-            <span className="text-xs font-bold text-blue-400">Top 1% ↗</span>
+             className="flex items-center gap-3 rounded-full border border-blue-500/10 bg-blue-500/[0.04] px-5 py-2.5 group hover:bg-blue-500/[0.08] transition-all duration-500">
+            <Zap className="h-4 w-4 text-blue-400" />
+            <span className="text-sm text-white/60">TryHackMe</span>
+            <span className="text-xs font-bold text-blue-400 bg-blue-400/10 rounded-full px-2 py-0.5">Top 1%</span>
           </a>
         </motion.div>
       </div>
