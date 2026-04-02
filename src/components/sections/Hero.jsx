@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowDown, ChevronRight, Shield, Terminal, Bug, Award } from "lucide-react";
+import { ArrowDown, ChevronRight } from "lucide-react";
 
 const ROLES = [
   "Penetration Tester",
@@ -10,14 +10,22 @@ const ROLES = [
 ];
 
 const TERMINAL_LINES = [
+  { prompt: true, text: "whoami" },
+  { text: "rajdip — Senior Security Consultant @ RedHunt Labs", success: true },
+  { prompt: true, text: "cat skills.txt" },
+  { text: "Web App | API | Mobile | Cloud | AD | Red Team", dim: true },
   { prompt: true, text: "nmap -sV -A target.com" },
-  { text: "443/tcp open  https  nginx/1.21", dim: true },
-  { prompt: true, text: "sqlmap -u 'target.com/api?id=1'" },
-  { text: "[INFO] Parameter 'id' is vulnerable", success: true },
-  { prompt: true, text: "nuclei -t cves/ -target target.com" },
-  { text: "[critical] CVE-2023-XXXXX detected", danger: true },
-  { prompt: true, text: "echo 'Access Granted'" },
-  { text: "Access Granted", success: true },
+  { text: "PORT    STATE  SERVICE   VERSION", dim: true },
+  { text: "443/tcp open   https     nginx/1.21", dim: true },
+  { text: "8080/tcp open  http-proxy Squid/4.6", dim: true },
+  { prompt: true, text: "sqlmap -u 'https://target.com/api?id=1' --batch" },
+  { text: "[*] testing connection to target URL", dim: true },
+  { text: "[INFO] Parameter 'id' is vulnerable (boolean-based blind)", success: true },
+  { text: "[INFO] fetching database names...", success: true },
+  { prompt: true, text: "nuclei -t cves/ -target target.com -severity critical" },
+  { text: "[critical] CVE-2023-XXXXX — RCE via deserialization", danger: true },
+  { prompt: true, text: "echo '** Assessment Complete — Report Generated **'" },
+  { text: "** Assessment Complete — Report Generated **", success: true },
 ];
 
 /* ── typing hook ── */
@@ -66,13 +74,13 @@ function NetworkCanvas() {
       resize();
       const w = canvas.offsetWidth;
       const h = canvas.offsetHeight;
-      nodes = Array.from({ length: 70 }, () => ({
+      nodes = Array.from({ length: 60 }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,
-        r: Math.random() * 1.8 + 0.3,
-        vx: (Math.random() - 0.5) * 0.35,
-        vy: (Math.random() - 0.5) * 0.35,
-        o: Math.random() * 0.35 + 0.08,
+        r: Math.random() * 1.6 + 0.3,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        o: Math.random() * 0.3 + 0.08,
       }));
     };
 
@@ -92,8 +100,8 @@ function NetworkCanvas() {
         const dy = n.y - mouse.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < 120 && dist > 0) {
-          n.vx += (dx / dist) * 0.12;
-          n.vy += (dy / dist) * 0.12;
+          n.vx += (dx / dist) * 0.1;
+          n.vy += (dy / dist) * 0.1;
         }
         n.vx *= 0.99;
         n.vy *= 0.99;
@@ -119,7 +127,7 @@ function NetworkCanvas() {
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(139, 92, 246, ${0.07 * (1 - d / 130)})`;
+            ctx.strokeStyle = `rgba(139, 92, 246, ${0.06 * (1 - d / 130)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -144,47 +152,80 @@ function NetworkCanvas() {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
 }
 
-/* ── Mini terminal (decorative, positioned) ── */
-function MiniTerminal() {
+/* ── Full terminal ── */
+function FullTerminal() {
   const [visibleLines, setVisibleLines] = useState(0);
+  const bodyRef = useRef(null);
 
   useEffect(() => {
     if (visibleLines >= TERMINAL_LINES.length) return;
-    const delay = TERMINAL_LINES[visibleLines]?.prompt ? 1000 : 450;
+    const line = TERMINAL_LINES[visibleLines];
+    const delay = line?.prompt ? 800 : 300;
     const timer = setTimeout(() => setVisibleLines((v) => v + 1), delay);
     return () => clearTimeout(timer);
   }, [visibleLines]);
 
+  useEffect(() => {
+    if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+  }, [visibleLines]);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
-      className="w-full max-w-sm"
+      transition={{ duration: 0.9, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
+      className="w-full"
     >
-      <div className="rounded-xl border border-white/[0.06] bg-[#0c0c14]/80 backdrop-blur-xl overflow-hidden shadow-2xl shadow-violet-500/5">
-        <div className="flex items-center gap-1.5 px-3 py-2 border-b border-white/[0.04] bg-white/[0.02]">
-          <div className="h-2 w-2 rounded-full bg-red-500/60" />
-          <div className="h-2 w-2 rounded-full bg-yellow-500/60" />
-          <div className="h-2 w-2 rounded-full bg-green-500/60" />
-          <span className="ml-1.5 text-[10px] text-white/20 font-mono">rajdip@kali:~</span>
+      {/* Glow */}
+      <div className="absolute -inset-3 rounded-2xl blur-2xl opacity-20 pointer-events-none -z-10"
+           style={{ background: "conic-gradient(from 200deg, #7c3aed, #3b82f6, #7c3aed)" }} />
+
+      <div className="rounded-2xl border border-white/[0.08] bg-[#0b0b14]/90 backdrop-blur-xl overflow-hidden shadow-2xl shadow-violet-500/5">
+        {/* Title bar */}
+        <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.05] bg-white/[0.015]">
+          <div className="flex items-center gap-2">
+            <div className="flex gap-1.5">
+              <div className="h-3 w-3 rounded-full bg-[#ff5f57]" />
+              <div className="h-3 w-3 rounded-full bg-[#febc2e]" />
+              <div className="h-3 w-3 rounded-full bg-[#28c840]" />
+            </div>
+            <span className="ml-3 text-[12px] text-white/30 font-mono">rajdip@kali ~ </span>
+          </div>
+          <div className="flex items-center gap-3 text-[10px] text-white/15 font-mono">
+            <span>bash</span>
+            <span>80x24</span>
+          </div>
         </div>
-        <div className="p-3 font-mono text-[11px] leading-relaxed h-[160px] overflow-hidden">
+
+        {/* Body */}
+        <div ref={bodyRef} className="p-5 font-mono text-[13px] sm:text-[14px] leading-[1.7] h-[280px] sm:h-[300px] overflow-y-auto scrollbar-hide">
           {TERMINAL_LINES.slice(0, visibleLines).map((line, i) => (
-            <div key={i} className="flex items-start gap-0 mb-0.5">
-              {line.prompt && <span className="text-emerald-400 mr-1 shrink-0">$ </span>}
-              <span className={
-                line.success ? "text-emerald-400" :
-                line.danger ? "text-red-400" :
-                line.dim ? "text-white/20" :
-                line.prompt ? "text-white/60" : "text-white/30"
-              }>{line.text}</span>
+            <div key={i} className="flex items-start">
+              {line.prompt ? (
+                <>
+                  <span className="text-blue-400 shrink-0">rajdip</span>
+                  <span className="text-white/20 shrink-0">@</span>
+                  <span className="text-violet-400 shrink-0">kali</span>
+                  <span className="text-white/20 shrink-0">:~$ </span>
+                  <span className="text-white/70">{line.text}</span>
+                </>
+              ) : (
+                <span className={
+                  line.success ? "text-emerald-400" :
+                  line.danger ? "text-red-400 font-semibold" :
+                  line.dim ? "text-white/25" :
+                  "text-white/40"
+                }>{line.text}</span>
+              )}
             </div>
           ))}
           {visibleLines < TERMINAL_LINES.length && (
             <div className="flex items-center">
-              <span className="text-emerald-400">$ </span>
-              <span className="w-1.5 h-3.5 bg-violet-400/50 ml-0.5 animate-pulse" />
+              <span className="text-blue-400">rajdip</span>
+              <span className="text-white/20">@</span>
+              <span className="text-violet-400">kali</span>
+              <span className="text-white/20">:~$ </span>
+              <span className="w-2 h-[18px] bg-violet-400/60 ml-0.5 animate-pulse" />
             </div>
           )}
         </div>
@@ -202,38 +243,9 @@ function GlitchText({ text, className }) {
   );
 }
 
-/* ── Count-up ── */
-function CountUp({ target, suffix = "" }) {
-  const [val, setVal] = useState(0);
-  const ref = useRef(null);
-  const started = useRef(false);
-
-  useEffect(() => {
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !started.current) {
-        started.current = true;
-        const num = parseInt(target, 10);
-        if (isNaN(num)) { setVal(target); return; }
-        const steps = 35;
-        const inc = num / steps;
-        let step = 0;
-        const timer = setInterval(() => {
-          step++;
-          setVal(Math.min(Math.round(inc * step), num));
-          if (step >= steps) clearInterval(timer);
-        }, 40);
-      }
-    }, { threshold: 0.3 });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, [target]);
-
-  return <span ref={ref}>{typeof val === "number" ? val : target}{suffix}</span>;
-}
-
-/* ── fade helper ── */
+/* ── fade ── */
 const fade = (delay = 0) => ({
-  initial: { opacity: 0, y: 28 },
+  initial: { opacity: 0, y: 24 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] },
 });
@@ -243,22 +255,22 @@ export default function Hero() {
   const role = useTypingEffect(ROLES);
 
   return (
-    <section id="home" className="relative min-h-[100dvh] flex items-center justify-center px-6 overflow-hidden">
+    <section id="home" className="relative min-h-[100dvh] flex flex-col justify-center px-6 overflow-hidden">
       <NetworkCanvas />
 
-      {/* Ambient glows */}
+      {/* Ambient */}
       <div className="absolute top-0 left-1/4 w-[700px] h-[700px] pointer-events-none"
-           style={{ background: "radial-gradient(circle, rgba(124,58,237,0.12), transparent 60%)" }} />
+           style={{ background: "radial-gradient(circle, rgba(124,58,237,0.1), transparent 60%)" }} />
       <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] pointer-events-none"
-           style={{ background: "radial-gradient(circle, rgba(59,130,246,0.08), transparent 60%)" }} />
+           style={{ background: "radial-gradient(circle, rgba(59,130,246,0.07), transparent 60%)" }} />
 
       {/* Scan line */}
       <div className="hero-scanline absolute inset-0 pointer-events-none overflow-hidden z-[1]" />
 
-      <div className="relative z-10 mx-auto max-w-6xl w-full py-20">
-        {/* Center content */}
-        <div className="text-center">
-          {/* Status pill */}
+      <div className="relative z-10 mx-auto max-w-5xl w-full">
+        {/* ── TOP: Name & CTAs ── */}
+        <div className="text-center mb-14">
+          {/* Status */}
           <motion.div {...fade(0.1)} className="flex justify-center mb-8">
             <div className="inline-flex items-center gap-2 rounded-full bg-violet-500/[0.06] border border-violet-500/[0.12] backdrop-blur-md px-4 py-2 text-[12px]">
               <span className="relative flex h-2 w-2">
@@ -269,12 +281,12 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* Big name */}
+          {/* Name */}
           <motion.h1
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-[0.95]"
+            transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-[0.92]"
           >
             <GlitchText text="Rajdip" className="text-white" />
             <br />
@@ -283,25 +295,18 @@ export default function Hero() {
             </span>
           </motion.h1>
 
-          {/* Role typing */}
-          <motion.div {...fade(0.5)} className="mt-6 flex justify-center items-center gap-2">
+          {/* Role */}
+          <motion.div {...fade(0.45)} className="mt-5 flex justify-center items-center gap-2">
             <span className="text-violet-500/40 font-mono text-sm">&gt;</span>
-            <div className="text-lg sm:text-xl text-white/40 font-light tracking-wide font-mono">
-              <span>{role}</span>
-              <span className="inline-block w-[2px] h-5 bg-violet-400/70 ml-0.5 animate-blink align-middle" />
+            <div className="text-lg sm:text-xl text-white/40 tracking-wide font-mono">
+              {role}<span className="inline-block w-[2px] h-5 bg-violet-400/70 ml-0.5 animate-blink align-middle" />
             </div>
           </motion.div>
 
-          {/* Tagline */}
-          <motion.p {...fade(0.65)} className="mt-5 text-sm sm:text-[15px] text-white/25 max-w-xl mx-auto leading-relaxed">
-            I break things so you can build them stronger. Offensive security across
-            web, API, mobile, cloud & Active Directory.
-          </motion.p>
-
           {/* CTAs */}
-          <motion.div {...fade(0.8)} className="mt-9 flex flex-wrap justify-center gap-3">
+          <motion.div {...fade(0.6)} className="mt-8 flex flex-wrap justify-center gap-3">
             <a href="#services"
-               className="group relative inline-flex items-center gap-2 rounded-full px-8 py-4 text-sm font-semibold text-white overflow-hidden transition-all duration-500 hover:-translate-y-0.5">
+               className="group relative inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-semibold text-white overflow-hidden transition-all duration-500 hover:-translate-y-0.5">
               <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-blue-600 to-violet-600 bg-[length:200%_100%] animate-gradient-x rounded-full" />
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-600 to-blue-600 blur-xl opacity-40 group-hover:opacity-60 transition-opacity" />
               <span className="relative z-10 flex items-center gap-2">
@@ -309,61 +314,46 @@ export default function Hero() {
               </span>
             </a>
             <a href="#about"
-               className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-8 py-4 text-sm font-medium text-white/50 hover:text-white hover:border-violet-500/25 hover:bg-violet-500/[0.04] backdrop-blur-sm transition-all duration-500">
+               className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-8 py-3.5 text-sm font-medium text-white/50 hover:text-white hover:border-violet-500/25 hover:bg-violet-500/[0.04] backdrop-blur-sm transition-all duration-500">
               Learn More <ChevronRight className="h-3.5 w-3.5" />
             </a>
           </motion.div>
+
+          {/* Inline stats */}
+          <motion.div {...fade(0.75)} className="mt-10 flex justify-center">
+            <div className="inline-flex items-center divide-x divide-white/[0.06]">
+              {[
+                { val: "4+", lbl: "Years" },
+                { val: "80+", lbl: "HoFs" },
+                { val: "2", lbl: "CVEs" },
+                { val: "6", lbl: "Certs" },
+              ].map((s) => (
+                <div key={s.lbl} className="px-6 sm:px-8 text-center">
+                  <div className="text-xl sm:text-2xl font-bold text-white/80">{s.val}</div>
+                  <div className="text-[9px] text-white/20 tracking-[0.15em] mt-0.5 uppercase">{s.lbl}</div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
         </div>
 
-        {/* Bottom section: Stats + Terminal side by side */}
-        <motion.div {...fade(1.0)} className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-6 items-end">
-          {/* Stats cards */}
-          <div className="grid grid-cols-4 gap-3">
-            {[
-              { icon: <Terminal className="h-4 w-4" />, val: "4", suf: "+", lbl: "Years", color: "violet" },
-              { icon: <Shield className="h-4 w-4" />, val: "80", suf: "+", lbl: "HoFs", color: "blue" },
-              { icon: <Bug className="h-4 w-4" />, val: "2", suf: "", lbl: "CVEs", color: "amber" },
-              { icon: <Award className="h-4 w-4" />, val: "6", suf: "", lbl: "Certs", color: "emerald" },
-            ].map((s) => {
-              const colors = {
-                violet: "text-violet-400 bg-violet-500/10 border-violet-500/10",
-                blue: "text-blue-400 bg-blue-500/10 border-blue-500/10",
-                amber: "text-amber-400 bg-amber-500/10 border-amber-500/10",
-                emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/10",
-              };
-              return (
-                <div key={s.lbl}
-                     className="rounded-xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-4 text-center hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-500 group">
-                  <div className={`h-8 w-8 rounded-lg ${colors[s.color]} border flex items-center justify-center mx-auto mb-2.5`}>
-                    {s.icon}
-                  </div>
-                  <div className="text-2xl font-extrabold text-white/90 group-hover:text-white transition-colors">
-                    <CountUp target={s.val} suffix={s.suf} />
-                  </div>
-                  <div className="text-[9px] text-white/20 tracking-[0.15em] mt-1 uppercase font-medium">{s.lbl}</div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Terminal */}
-          <div className="flex justify-center lg:justify-end">
-            <MiniTerminal />
-          </div>
-        </motion.div>
+        {/* ── BOTTOM: Full-width terminal ── */}
+        <div className="relative">
+          <FullTerminal />
+        </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2.5, duration: 1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10"
       >
         <a href="#about" className="flex flex-col items-center gap-2 group">
-          <span className="text-[10px] text-white/15 uppercase tracking-[0.2em] group-hover:text-white/30 transition-colors">Scroll</span>
-          <div className="h-8 w-4 rounded-full border border-white/10 flex justify-center pt-1.5 group-hover:border-violet-500/30 transition-colors">
-            <div className="h-1.5 w-1 rounded-full bg-white/30 animate-bounce" />
+          <span className="text-[9px] text-white/15 uppercase tracking-[0.2em] group-hover:text-white/30 transition-colors">Scroll</span>
+          <div className="h-7 w-4 rounded-full border border-white/10 flex justify-center pt-1 group-hover:border-violet-500/30 transition-colors">
+            <div className="h-1.5 w-1 rounded-full bg-white/25 animate-bounce" />
           </div>
         </a>
       </motion.div>
@@ -391,20 +381,20 @@ export default function Hero() {
         }
         .hero-glitch::before {
           color: #a78bfa;
-          animation: glitch1 3.5s ease-in-out infinite;
+          animation: g1 3.5s ease-in-out infinite;
         }
         .hero-glitch::after {
           color: #60a5fa;
-          animation: glitch2 3.5s ease-in-out infinite;
+          animation: g2 3.5s ease-in-out infinite;
         }
-        @keyframes glitch1 {
+        @keyframes g1 {
           0%, 90%, 100% { opacity: 0; transform: translate(0); }
           91% { opacity: 0.8; transform: translate(-4px, 2px); }
           92% { opacity: 0; }
           94% { opacity: 0.6; transform: translate(3px, -1px); }
           95% { opacity: 0; }
         }
-        @keyframes glitch2 {
+        @keyframes g2 {
           0%, 88%, 100% { opacity: 0; transform: translate(0); }
           89% { opacity: 0.7; transform: translate(4px, -2px); }
           90% { opacity: 0; }
@@ -420,10 +410,10 @@ export default function Hero() {
           background: linear-gradient(90deg, transparent, rgba(139,92,246,0.12), transparent);
           animation: scanmove 6s linear infinite;
         }
-        @keyframes scanmove {
-          0% { top: -2px; }
-          100% { top: 100%; }
-        }
+        @keyframes scanmove { 0% { top: -2px; } 100% { top: 100%; } }
+
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
     </section>
   );
