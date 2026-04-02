@@ -1,4 +1,5 @@
 import Background from "../components/layout/Background";
+import CursorGlow from "../components/effects/CursorGlow";
 import Nav from "../components/layout/Nav";
 
 import Hero from "../components/sections/Hero";
@@ -15,6 +16,7 @@ export default function Portfolio() {
   return (
     <>
       <Background />
+      <CursorGlow />
       <main className="relative z-10 min-h-screen text-white">
         <Nav />
         <Hero />
