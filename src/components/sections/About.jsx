@@ -1,6 +1,13 @@
 import { motion } from "framer-motion";
 import { Sparkles, ExternalLink } from "lucide-react";
 
+import OscpLogo from "../../assets/certs/oscp.png";
+import CrtoLogo from "../../assets/certs/crto.png";
+import CrtpLogo from "../../assets/certs/crtp.png";
+import EwptxLogo from "../../assets/certs/ewptxv2.svg";
+import CehLogo from "../../assets/certs/ceh.jpg";
+import CapLogo from "../../assets/certs/cap.webp";
+
 const SUMMARY =
   "With 4+ years in offensive security, I combine application security and red teaming to deliver deep-dive assessments. I specialize in web, API, mobile, thick-client testing, plus AD adversary simulation. Available for engagements.";
 
@@ -10,37 +17,37 @@ const CERTS = [
   {
     name: "OSCP+",
     full: "Offensive Security Certified Professional",
-    logo: "https://images.credly.com/size/340x340/images/ec81134d-e80b-4eb5-ae07-0eb8e1a60fcd/image.png",
+    logo: OscpLogo,
     href: "#",
   },
   {
     name: "CRTO",
     full: "Certified Red Team Operator",
-    logo: "https://images.credly.com/size/340x340/images/2ae023ba-e90b-4261-8ab2-f4223eea8f52/image.png",
+    logo: CrtoLogo,
     href: "https://eu.badgr.com/public/assertions/7Wr3jQrFQP6FOK6rZZUkYA?identity__email=Wcyber71@gmail.com&action=download",
   },
   {
     name: "CRTP",
     full: "Certified Red Teaming Professional",
-    logo: "https://www.alteredsecurity.com/hubfs/Pentester_Academy_October2021/images/crtp-certified-red-team-professional-by-pentester-academy-1.png",
+    logo: CrtpLogo,
     href: "https://www.credential.net/79c25d7c-e2ce-4c7b-8e8a-d9f37c4d1013",
   },
   {
     name: "eWPTXv2",
     full: "Web Pentester eXtreme",
-    logo: "https://security.ine.com/wp-content/uploads/2023/08/eWPTXv2-1.png",
+    logo: EwptxLogo,
     href: "https://certs.ine.com/d4ac221f-7b89-44c8-9918-bb31cc89efad?record_view=true",
   },
   {
     name: "CEH v11",
     full: "Certified Ethical Hacker",
-    logo: "https://images.credly.com/size/340x340/images/a6ea4416-2bec-4078-b0b5-39e47c7e3614/image.png",
+    logo: CehLogo,
     href: "https://www.linkedin.com/in/rdsarkar/details/featured/1635468419676/single-media-viewer/?profileId=ACoAADA4H70BJdcbrjiwf_08MMvUzMOiVflnfVs",
   },
   {
     name: "CAP",
     full: "Certified AppSec Practitioner",
-    logo: "https://secops.group/wp-content/uploads/2023/01/CAP-Badge.png",
+    logo: CapLogo,
     href: "https://www.linkedin.com/posts/rdsarkar_certified-appsec-practitioner-activity-7012447184361062400-gXl5",
   },
 ];
