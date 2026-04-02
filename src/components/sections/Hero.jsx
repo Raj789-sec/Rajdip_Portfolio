@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowDown, ChevronRight } from "lucide-react";
-
-const AVATAR =
-  "https://api.dicebear.com/9.x/adventurer/svg?seed=rd&backgroundColor=b6e3f4,c0aede,d1d4f9&accessories=glasses&glasses=prescription01&mouth=smile";
+import { ArrowDown, ChevronRight, Shield, Terminal, Bug, Award } from "lucide-react";
 
 const ROLES = [
   "Penetration Tester",
@@ -14,9 +11,8 @@ const ROLES = [
 
 const TERMINAL_LINES = [
   { prompt: true, text: "nmap -sV -A target.com" },
-  { text: "PORT    STATE  SERVICE  VERSION", dim: true },
-  { text: "443/tcp open   https    nginx/1.21", dim: true },
-  { prompt: true, text: "sqlmap -u 'https://target.com/api?id=1'" },
+  { text: "443/tcp open  https  nginx/1.21", dim: true },
+  { prompt: true, text: "sqlmap -u 'target.com/api?id=1'" },
   { text: "[INFO] Parameter 'id' is vulnerable", success: true },
   { prompt: true, text: "nuclei -t cves/ -target target.com" },
   { text: "[critical] CVE-2023-XXXXX detected", danger: true },
@@ -39,11 +35,7 @@ function useTypingEffect(words, typeSpeed = 80, deleteSpeed = 40, pause = 2200) 
         setDeleting(false);
         setIdx((i) => (i + 1) % words.length);
       } else {
-        setText(
-          deleting
-            ? word.slice(0, text.length - 1)
-            : word.slice(0, text.length + 1)
-        );
+        setText(deleting ? word.slice(0, text.length - 1) : word.slice(0, text.length + 1));
       }
     }, timeout);
     return () => clearTimeout(timer);
@@ -52,85 +44,7 @@ function useTypingEffect(words, typeSpeed = 80, deleteSpeed = 40, pause = 2200) 
   return text;
 }
 
-/* ── Animated terminal ── */
-function TerminalWindow() {
-  const [visibleLines, setVisibleLines] = useState(0);
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    if (visibleLines >= TERMINAL_LINES.length) return;
-    const delay = TERMINAL_LINES[visibleLines]?.prompt ? 900 : 400;
-    const timer = setTimeout(() => setVisibleLines((v) => v + 1), delay);
-    return () => clearTimeout(timer);
-  }, [visibleLines]);
-
-  useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
-    }
-  }, [visibleLines]);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.9, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="relative w-full max-w-md mx-auto lg:mx-0"
-    >
-      {/* Glow behind */}
-      <div className="absolute -inset-4 rounded-3xl blur-3xl opacity-30 -z-10"
-           style={{ background: "conic-gradient(from 180deg, #7c3aed, #3b82f6, #7c3aed)" }} />
-
-      <div className="rounded-2xl border border-white/[0.08] bg-[#0c0c14]/90 backdrop-blur-xl overflow-hidden shadow-2xl shadow-violet-500/10">
-        {/* Title bar */}
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06] bg-white/[0.02]">
-          <div className="flex gap-1.5">
-            <div className="h-3 w-3 rounded-full bg-red-500/70" />
-            <div className="h-3 w-3 rounded-full bg-yellow-500/70" />
-            <div className="h-3 w-3 rounded-full bg-green-500/70" />
-          </div>
-          <span className="ml-2 text-[11px] text-white/25 font-mono">rajdip@kali:~</span>
-        </div>
-
-        {/* Terminal body */}
-        <div ref={containerRef} className="p-4 font-mono text-[12px] sm:text-[13px] leading-relaxed h-[220px] overflow-hidden">
-          {TERMINAL_LINES.slice(0, visibleLines).map((line, i) => (
-            <div key={i} className="flex items-start gap-0 mb-1">
-              {line.prompt && (
-                <span className="text-violet-400 mr-1 shrink-0">
-                  <span className="text-emerald-400">$</span>{" "}
-                </span>
-              )}
-              <span
-                className={
-                  line.success
-                    ? "text-emerald-400"
-                    : line.danger
-                    ? "text-red-400"
-                    : line.dim
-                    ? "text-white/25"
-                    : line.prompt
-                    ? "text-white/70"
-                    : "text-white/40"
-                }
-              >
-                {line.text}
-              </span>
-            </div>
-          ))}
-          {visibleLines < TERMINAL_LINES.length && (
-            <div className="flex items-center gap-0">
-              <span className="text-emerald-400">$</span>
-              <span className="w-2 h-4 bg-violet-400/50 ml-1 animate-pulse" />
-            </div>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-/* ── Floating network nodes (canvas) ── */
+/* ── Interactive network canvas ── */
 function NetworkCanvas() {
   const canvasRef = useRef(null);
 
@@ -152,13 +66,13 @@ function NetworkCanvas() {
       resize();
       const w = canvas.offsetWidth;
       const h = canvas.offsetHeight;
-      nodes = Array.from({ length: 60 }, () => ({
+      nodes = Array.from({ length: 70 }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,
-        r: Math.random() * 1.8 + 0.4,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        o: Math.random() * 0.4 + 0.1,
+        r: Math.random() * 1.8 + 0.3,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        o: Math.random() * 0.35 + 0.08,
       }));
     };
 
@@ -174,15 +88,13 @@ function NetworkCanvas() {
       ctx.clearRect(0, 0, w, h);
 
       nodes.forEach((n) => {
-        // Mouse repel
         const dx = n.x - mouse.x;
         const dy = n.y - mouse.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 100 && dist > 0) {
-          n.vx += (dx / dist) * 0.15;
-          n.vy += (dy / dist) * 0.15;
+        if (dist < 120 && dist > 0) {
+          n.vx += (dx / dist) * 0.12;
+          n.vy += (dy / dist) * 0.12;
         }
-
         n.vx *= 0.99;
         n.vy *= 0.99;
         n.x += n.vx;
@@ -198,7 +110,6 @@ function NetworkCanvas() {
         ctx.fill();
       });
 
-      // Connections
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const ddx = nodes[i].x - nodes[j].x;
@@ -208,13 +119,12 @@ function NetworkCanvas() {
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(139, 92, 246, ${0.08 * (1 - d / 130)})`;
-            ctx.lineWidth = 0.6;
+            ctx.strokeStyle = `rgba(139, 92, 246, ${0.07 * (1 - d / 130)})`;
+            ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         }
       }
-
       raf = requestAnimationFrame(draw);
     };
 
@@ -234,7 +144,56 @@ function NetworkCanvas() {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
 }
 
-/* ── Glitch text effect ── */
+/* ── Mini terminal (decorative, positioned) ── */
+function MiniTerminal() {
+  const [visibleLines, setVisibleLines] = useState(0);
+
+  useEffect(() => {
+    if (visibleLines >= TERMINAL_LINES.length) return;
+    const delay = TERMINAL_LINES[visibleLines]?.prompt ? 1000 : 450;
+    const timer = setTimeout(() => setVisibleLines((v) => v + 1), delay);
+    return () => clearTimeout(timer);
+  }, [visibleLines]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
+      className="w-full max-w-sm"
+    >
+      <div className="rounded-xl border border-white/[0.06] bg-[#0c0c14]/80 backdrop-blur-xl overflow-hidden shadow-2xl shadow-violet-500/5">
+        <div className="flex items-center gap-1.5 px-3 py-2 border-b border-white/[0.04] bg-white/[0.02]">
+          <div className="h-2 w-2 rounded-full bg-red-500/60" />
+          <div className="h-2 w-2 rounded-full bg-yellow-500/60" />
+          <div className="h-2 w-2 rounded-full bg-green-500/60" />
+          <span className="ml-1.5 text-[10px] text-white/20 font-mono">rajdip@kali:~</span>
+        </div>
+        <div className="p-3 font-mono text-[11px] leading-relaxed h-[160px] overflow-hidden">
+          {TERMINAL_LINES.slice(0, visibleLines).map((line, i) => (
+            <div key={i} className="flex items-start gap-0 mb-0.5">
+              {line.prompt && <span className="text-emerald-400 mr-1 shrink-0">$ </span>}
+              <span className={
+                line.success ? "text-emerald-400" :
+                line.danger ? "text-red-400" :
+                line.dim ? "text-white/20" :
+                line.prompt ? "text-white/60" : "text-white/30"
+              }>{line.text}</span>
+            </div>
+          ))}
+          {visibleLines < TERMINAL_LINES.length && (
+            <div className="flex items-center">
+              <span className="text-emerald-400">$ </span>
+              <span className="w-1.5 h-3.5 bg-violet-400/50 ml-0.5 animate-pulse" />
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ── Glitch text ── */
 function GlitchText({ text, className }) {
   return (
     <span className={`hero-glitch relative inline-block ${className}`} data-text={text}>
@@ -243,51 +202,38 @@ function GlitchText({ text, className }) {
   );
 }
 
-/* ── stat counter with count-up ── */
+/* ── Count-up ── */
 function CountUp({ target, suffix = "" }) {
   const [val, setVal] = useState(0);
   const ref = useRef(null);
   const started = useRef(false);
 
   useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !started.current) {
-          started.current = true;
-          const num = parseInt(target, 10);
-          if (isNaN(num)) { setVal(target); return; }
-          const duration = 1500;
-          const steps = 40;
-          const increment = num / steps;
-          let current = 0;
-          let step = 0;
-          const timer = setInterval(() => {
-            step++;
-            current = Math.min(Math.round(increment * step), num);
-            setVal(current);
-            if (step >= steps) clearInterval(timer);
-          }, duration / steps);
-        }
-      },
-      { threshold: 0.3 }
-    );
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !started.current) {
+        started.current = true;
+        const num = parseInt(target, 10);
+        if (isNaN(num)) { setVal(target); return; }
+        const steps = 35;
+        const inc = num / steps;
+        let step = 0;
+        const timer = setInterval(() => {
+          step++;
+          setVal(Math.min(Math.round(inc * step), num));
+          if (step >= steps) clearInterval(timer);
+        }, 40);
+      }
+    }, { threshold: 0.3 });
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, [target]);
 
-  const isNum = !isNaN(parseInt(target, 10));
-
-  return (
-    <span ref={ref}>
-      {isNum ? val : target}
-      {suffix}
-    </span>
-  );
+  return <span ref={ref}>{typeof val === "number" ? val : target}{suffix}</span>;
 }
 
 /* ── fade helper ── */
 const fade = (delay = 0) => ({
-  initial: { opacity: 0, y: 30 },
+  initial: { opacity: 0, y: 28 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] },
 });
@@ -297,24 +243,23 @@ export default function Hero() {
   const role = useTypingEffect(ROLES);
 
   return (
-    <section id="home" className="relative min-h-[100dvh] flex items-center px-6 overflow-hidden">
-      {/* Interactive network canvas */}
+    <section id="home" className="relative min-h-[100dvh] flex items-center justify-center px-6 overflow-hidden">
       <NetworkCanvas />
 
-      {/* Large ambient glows */}
-      <div className="absolute top-0 left-1/3 w-[800px] h-[800px] pointer-events-none opacity-40"
+      {/* Ambient glows */}
+      <div className="absolute top-0 left-1/4 w-[700px] h-[700px] pointer-events-none"
            style={{ background: "radial-gradient(circle, rgba(124,58,237,0.12), transparent 60%)" }} />
-      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] pointer-events-none opacity-30"
-           style={{ background: "radial-gradient(circle, rgba(59,130,246,0.1), transparent 60%)" }} />
+      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] pointer-events-none"
+           style={{ background: "radial-gradient(circle, rgba(59,130,246,0.08), transparent 60%)" }} />
 
-      {/* Horizontal scan line */}
+      {/* Scan line */}
       <div className="hero-scanline absolute inset-0 pointer-events-none overflow-hidden z-[1]" />
 
-      <div className="relative z-10 mx-auto max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center py-20">
-        {/* ── LEFT: TEXT ── */}
-        <div className="order-2 lg:order-1 text-center lg:text-left">
-          {/* Status badge */}
-          <motion.div {...fade(0.1)} className="flex justify-center lg:justify-start mb-7">
+      <div className="relative z-10 mx-auto max-w-6xl w-full py-20">
+        {/* Center content */}
+        <div className="text-center">
+          {/* Status pill */}
+          <motion.div {...fade(0.1)} className="flex justify-center mb-8">
             <div className="inline-flex items-center gap-2 rounded-full bg-violet-500/[0.06] border border-violet-500/[0.12] backdrop-blur-md px-4 py-2 text-[12px]">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -324,12 +269,12 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* Name — Glitch on first, gradient on last */}
+          {/* Big name */}
           <motion.h1
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="text-5xl sm:text-6xl lg:text-7xl xl:text-[5.5rem] font-extrabold tracking-tight leading-[1.05]"
+            transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-[0.95]"
           >
             <GlitchText text="Rajdip" className="text-white" />
             <br />
@@ -338,88 +283,74 @@ export default function Hero() {
             </span>
           </motion.h1>
 
-          {/* Typing role with terminal-style prefix */}
-          <motion.div {...fade(0.5)} className="mt-5 flex justify-center lg:justify-start items-center gap-2">
-            <span className="text-violet-400/50 font-mono text-sm">~/</span>
-            <div className="text-lg sm:text-xl text-white/45 font-light tracking-wide font-mono">
+          {/* Role typing */}
+          <motion.div {...fade(0.5)} className="mt-6 flex justify-center items-center gap-2">
+            <span className="text-violet-500/40 font-mono text-sm">&gt;</span>
+            <div className="text-lg sm:text-xl text-white/40 font-light tracking-wide font-mono">
               <span>{role}</span>
               <span className="inline-block w-[2px] h-5 bg-violet-400/70 ml-0.5 animate-blink align-middle" />
             </div>
           </motion.div>
 
           {/* Tagline */}
-          <motion.p {...fade(0.65)} className="mt-5 text-sm sm:text-[15px] text-white/30 max-w-lg mx-auto lg:mx-0 leading-relaxed">
-            I break things so you can build them stronger. Offensive security across web, API, mobile, cloud & Active Directory.
+          <motion.p {...fade(0.65)} className="mt-5 text-sm sm:text-[15px] text-white/25 max-w-xl mx-auto leading-relaxed">
+            I break things so you can build them stronger. Offensive security across
+            web, API, mobile, cloud & Active Directory.
           </motion.p>
 
           {/* CTAs */}
-          <motion.div {...fade(0.8)} className="mt-8 flex flex-wrap justify-center lg:justify-start gap-3">
-            <a
-              href="#services"
-              className="group relative inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white overflow-hidden transition-all duration-500 hover:-translate-y-0.5"
-            >
-              {/* Animated gradient background */}
+          <motion.div {...fade(0.8)} className="mt-9 flex flex-wrap justify-center gap-3">
+            <a href="#services"
+               className="group relative inline-flex items-center gap-2 rounded-full px-8 py-4 text-sm font-semibold text-white overflow-hidden transition-all duration-500 hover:-translate-y-0.5">
               <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-blue-600 to-violet-600 bg-[length:200%_100%] animate-gradient-x rounded-full" />
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-600 to-blue-600 blur-xl opacity-40 group-hover:opacity-60 transition-opacity" />
               <span className="relative z-10 flex items-center gap-2">
-                View Services
-                <ArrowDown className="h-3.5 w-3.5 group-hover:translate-y-0.5 transition-transform" />
+                View Services <ArrowDown className="h-3.5 w-3.5 group-hover:translate-y-0.5 transition-transform" />
               </span>
             </a>
-            <a
-              href="#about"
-              className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-7 py-3.5 text-sm font-medium text-white/50 hover:text-white hover:border-violet-500/25 hover:bg-violet-500/[0.04] backdrop-blur-sm transition-all duration-500"
-            >
+            <a href="#about"
+               className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-8 py-4 text-sm font-medium text-white/50 hover:text-white hover:border-violet-500/25 hover:bg-violet-500/[0.04] backdrop-blur-sm transition-all duration-500">
               Learn More <ChevronRight className="h-3.5 w-3.5" />
             </a>
           </motion.div>
-
-          {/* Stats bar */}
-          <motion.div {...fade(0.95)} className="mt-12 inline-flex items-center gap-8 sm:gap-10">
-            {[
-              { val: "4", suf: "+", lbl: "YEARS" },
-              { val: "80", suf: "+", lbl: "HOFs" },
-              { val: "2", suf: "", lbl: "CVEs" },
-              { val: "6", suf: "", lbl: "CERTS" },
-            ].map((s) => (
-              <div key={s.lbl} className="text-center lg:text-left">
-                <div className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-b from-white to-white/50 bg-clip-text text-transparent">
-                  <CountUp target={s.val} suffix={s.suf} />
-                </div>
-                <div className="text-[9px] text-white/20 tracking-[0.2em] mt-1 font-medium">{s.lbl}</div>
-              </div>
-            ))}
-          </motion.div>
         </div>
 
-        {/* ── RIGHT: TERMINAL + AVATAR ── */}
-        <div className="order-1 lg:order-2 flex flex-col items-center lg:items-end gap-6">
-          {/* Avatar floating above terminal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="relative"
-          >
-            <div className="relative">
-              {/* Animated ring */}
-              <div className="absolute -inset-3 rounded-full border border-violet-500/20 animate-spin-slow" />
-              <div className="absolute -inset-6 rounded-full border border-blue-500/10 animate-spin-reverse" />
-
-              {/* Avatar */}
-              <div className="h-24 w-24 sm:h-28 sm:w-28 rounded-full overflow-hidden ring-2 ring-violet-500/30 ring-offset-4 ring-offset-[#09090b] relative z-10">
-                <img src={AVATAR} alt="Rajdip" className="h-full w-full object-cover" draggable="false" />
-              </div>
-
-              {/* Glow */}
-              <div className="absolute -inset-8 rounded-full blur-3xl opacity-20 -z-10"
-                   style={{ background: "radial-gradient(circle, #7c3aed, transparent)" }} />
-            </div>
-          </motion.div>
+        {/* Bottom section: Stats + Terminal side by side */}
+        <motion.div {...fade(1.0)} className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-6 items-end">
+          {/* Stats cards */}
+          <div className="grid grid-cols-4 gap-3">
+            {[
+              { icon: <Terminal className="h-4 w-4" />, val: "4", suf: "+", lbl: "Years", color: "violet" },
+              { icon: <Shield className="h-4 w-4" />, val: "80", suf: "+", lbl: "HoFs", color: "blue" },
+              { icon: <Bug className="h-4 w-4" />, val: "2", suf: "", lbl: "CVEs", color: "amber" },
+              { icon: <Award className="h-4 w-4" />, val: "6", suf: "", lbl: "Certs", color: "emerald" },
+            ].map((s) => {
+              const colors = {
+                violet: "text-violet-400 bg-violet-500/10 border-violet-500/10",
+                blue: "text-blue-400 bg-blue-500/10 border-blue-500/10",
+                amber: "text-amber-400 bg-amber-500/10 border-amber-500/10",
+                emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/10",
+              };
+              return (
+                <div key={s.lbl}
+                     className="rounded-xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-4 text-center hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-500 group">
+                  <div className={`h-8 w-8 rounded-lg ${colors[s.color]} border flex items-center justify-center mx-auto mb-2.5`}>
+                    {s.icon}
+                  </div>
+                  <div className="text-2xl font-extrabold text-white/90 group-hover:text-white transition-colors">
+                    <CountUp target={s.val} suffix={s.suf} />
+                  </div>
+                  <div className="text-[9px] text-white/20 tracking-[0.15em] mt-1 uppercase font-medium">{s.lbl}</div>
+                </div>
+              );
+            })}
+          </div>
 
           {/* Terminal */}
-          <TerminalWindow />
-        </div>
+          <div className="flex justify-center lg:justify-end">
+            <MiniTerminal />
+          </div>
+        </motion.div>
       </div>
 
       {/* Scroll indicator */}
@@ -437,7 +368,7 @@ export default function Hero() {
         </a>
       </motion.div>
 
-      {/* ── Styles ── */}
+      {/* Styles */}
       <style>{`
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         .animate-blink { animation: blink 0.8s ease-in-out infinite; }
@@ -449,60 +380,47 @@ export default function Hero() {
         }
         .animate-gradient-x { animation: gradient-x 3s ease infinite; }
 
-        @keyframes spin-slow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .animate-spin-slow { animation: spin-slow 20s linear infinite; }
-
-        @keyframes spin-reverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
-        .animate-spin-reverse { animation: spin-reverse 30s linear infinite; }
-
-        /* Glitch effect */
-        .hero-glitch {
-          position: relative;
-        }
+        .hero-glitch { position: relative; }
         .hero-glitch::before,
         .hero-glitch::after {
           content: attr(data-text);
           position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
           opacity: 0;
         }
         .hero-glitch::before {
           color: #a78bfa;
-          animation: hero-glitch-1 4s ease-in-out infinite;
+          animation: glitch1 3.5s ease-in-out infinite;
         }
         .hero-glitch::after {
           color: #60a5fa;
-          animation: hero-glitch-2 4s ease-in-out infinite;
+          animation: glitch2 3.5s ease-in-out infinite;
         }
-        @keyframes hero-glitch-1 {
-          0%, 92%, 100% { opacity: 0; transform: translate(0); }
-          93% { opacity: 0.8; transform: translate(-3px, 1px); }
-          94% { opacity: 0; }
-          96% { opacity: 0.6; transform: translate(2px, -1px); }
-          97% { opacity: 0; }
-        }
-        @keyframes hero-glitch-2 {
+        @keyframes glitch1 {
           0%, 90%, 100% { opacity: 0; transform: translate(0); }
-          91% { opacity: 0.7; transform: translate(3px, -1px); }
+          91% { opacity: 0.8; transform: translate(-4px, 2px); }
           92% { opacity: 0; }
-          95% { opacity: 0.5; transform: translate(-2px, 2px); }
-          96% { opacity: 0; }
+          94% { opacity: 0.6; transform: translate(3px, -1px); }
+          95% { opacity: 0; }
+        }
+        @keyframes glitch2 {
+          0%, 88%, 100% { opacity: 0; transform: translate(0); }
+          89% { opacity: 0.7; transform: translate(4px, -2px); }
+          90% { opacity: 0; }
+          93% { opacity: 0.5; transform: translate(-3px, 2px); }
+          94% { opacity: 0; }
         }
 
-        /* Scan line */
         .hero-scanline::after {
           content: "";
           position: absolute;
-          left: 0;
-          right: 0;
+          left: 0; right: 0;
           height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(139,92,246,0.15), transparent);
-          animation: hero-scan 5s linear infinite;
+          background: linear-gradient(90deg, transparent, rgba(139,92,246,0.12), transparent);
+          animation: scanmove 6s linear infinite;
         }
-        @keyframes hero-scan {
+        @keyframes scanmove {
           0% { top: -2px; }
           100% { top: 100%; }
         }
