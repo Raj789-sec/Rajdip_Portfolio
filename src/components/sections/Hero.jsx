@@ -1,28 +1,111 @@
-import { useEffect, useRef, useState, memo } from "react";
+import { useEffect, useRef, useState, memo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { ArrowDown, ChevronRight } from "lucide-react";
 
 const ROLES = ["Penetration Tester", "Red Teamer", "Security Researcher", "Bug Bounty Hunter"];
+const CHARS = "アイウエオカキクケコサシスセソタチツテト0123456789ABCDEF!@#$%^&*";
+const NAME_TOP = "RAJDIP";
+const NAME_BOT = "DEY SARKAR";
 
-const TERMINAL_LINES = [
-  { prompt: true, text: "whoami" },
-  { text: "rajdip — Senior Security Consultant @ RedHunt Labs", success: true },
-  { prompt: true, text: "cat skills.txt" },
-  { text: "Web App | API | Mobile | Cloud | AD | Red Team", dim: true },
-  { prompt: true, text: "nmap -sV -A target.com" },
-  { text: "PORT    STATE  SERVICE   VERSION", dim: true },
-  { text: "443/tcp open   https     nginx/1.21", dim: true },
-  { text: "8080/tcp open  http-proxy Squid/4.6", dim: true },
-  { prompt: true, text: "sqlmap -u 'https://target.com/api?id=1' --batch" },
-  { text: "[*] testing connection to target URL", dim: true },
-  { text: "[INFO] Parameter 'id' is vulnerable (boolean-based blind)", success: true },
-  { text: "[INFO] fetching database names...", success: true },
-  { prompt: true, text: "nuclei -t cves/ -target target.com -severity critical" },
-  { text: "[critical] CVE-2023-XXXXX — RCE via deserialization", danger: true },
-  { prompt: true, text: "echo 'Assessment Complete — Report Generated'" },
-  { text: "Assessment Complete — Report Generated", success: true },
-];
+/* ── Matrix Rain Canvas ── */
+const MatrixRain = memo(function MatrixRain() {
+  const canvasRef = useRef(null);
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let raf, cols, drops;
+    const FONT = 14;
+
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = canvas.offsetWidth * dpr;
+      canvas.height = canvas.offsetHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cols = Math.floor(canvas.offsetWidth / FONT);
+      drops = Array.from({ length: cols }, () => Math.random() * -100);
+    };
+
+    resize();
+
+    const draw = () => {
+      ctx.fillStyle = "rgba(5,5,16,0.12)";
+      ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+      ctx.font = `${FONT}px "JetBrains Mono", monospace`;
+
+      for (let i = 0; i < cols; i++) {
+        const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
+        const x = i * FONT;
+        const y = drops[i] * FONT;
+
+        // Head of the stream — bright cyan
+        ctx.fillStyle = "rgba(0,240,255,0.9)";
+        ctx.fillText(ch, x, y);
+
+        // Trail — dimmer green-cyan
+        ctx.fillStyle = "rgba(0,240,255,0.15)";
+        ctx.fillText(CHARS[Math.floor(Math.random() * CHARS.length)], x, y - FONT);
+        ctx.fillStyle = "rgba(0,240,255,0.06)";
+        ctx.fillText(CHARS[Math.floor(Math.random() * CHARS.length)], x, y - FONT * 2);
+
+        drops[i] += 0.6;
+
+        if (y > canvas.offsetHeight && Math.random() > 0.985) {
+          drops[i] = 0;
+        }
+      }
+      raf = requestAnimationFrame(draw);
+    };
+
+    draw();
+    window.addEventListener("resize", resize, { passive: true });
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
+  }, []);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-40" />;
+});
+
+/* ── Decryption text effect ── */
+function useDecryptEffect(target, delay = 0, speed = 40) {
+  const [display, setDisplay] = useState("");
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    let iters = 0;
+    const maxIters = target.length * 3;
+    let timer;
+
+    const startTimer = setTimeout(() => {
+      timer = setInterval(() => {
+        iters++;
+        const revealed = Math.floor((iters / maxIters) * target.length);
+        let result = "";
+        for (let i = 0; i < target.length; i++) {
+          if (target[i] === " ") {
+            result += " ";
+          } else if (i < revealed) {
+            result += target[i];
+          } else {
+            result += CHARS[Math.floor(Math.random() * CHARS.length)];
+          }
+        }
+        setDisplay(result);
+        if (revealed >= target.length) {
+          clearInterval(timer);
+          setDisplay(target);
+          setDone(true);
+        }
+      }, speed);
+    }, delay);
+
+    return () => { clearTimeout(startTimer); clearInterval(timer); };
+  }, [target, delay, speed]);
+
+  return { display, done };
+}
+
+/* ── Typing role effect ── */
 function useTypingEffect(words, typeSpeed = 80, deleteSpeed = 40, pause = 2200) {
   const [text, setText] = useState("");
   const [idx, setIdx] = useState(0);
@@ -40,123 +123,52 @@ function useTypingEffect(words, typeSpeed = 80, deleteSpeed = 40, pause = 2200) 
   return text;
 }
 
-const NetworkCanvas = memo(function NetworkCanvas() {
-  const canvasRef = useRef(null);
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    let raf, nodes = [];
-    const COUNT = 30, LINK = 120;
-    const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = canvas.offsetWidth * dpr;
-      canvas.height = canvas.offsetHeight * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    const init = () => {
-      resize();
-      const w = canvas.offsetWidth, h = canvas.offsetHeight;
-      nodes = Array.from({ length: COUNT }, () => ({
-        x: Math.random() * w, y: Math.random() * h,
-        r: Math.random() * 1.5 + 0.3, vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.25,
-        o: Math.random() * 0.25 + 0.08,
-      }));
-    };
-    const draw = () => {
-      const w = canvas.offsetWidth, h = canvas.offsetHeight;
-      ctx.clearRect(0, 0, w, h);
-      for (let i = 0; i < COUNT; i++) {
-        const n = nodes[i];
-        n.x += n.vx; n.y += n.vy;
-        if (n.x < 0) n.x = w; if (n.x > w) n.x = 0;
-        if (n.y < 0) n.y = h; if (n.y > h) n.y = 0;
-      }
-      ctx.lineWidth = 0.4;
-      for (let i = 0; i < COUNT; i++) for (let j = i + 1; j < COUNT; j++) {
-        const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y, d2 = dx * dx + dy * dy;
-        if (d2 < LINK * LINK) {
-          ctx.beginPath(); ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y);
-          ctx.strokeStyle = `rgba(0,240,255,${0.06 * (1 - Math.sqrt(d2) / LINK)})`; ctx.stroke();
-        }
-      }
-      for (let i = 0; i < COUNT; i++) {
-        ctx.beginPath(); ctx.arc(nodes[i].x, nodes[i].y, nodes[i].r, 0, 6.283);
-        ctx.fillStyle = `rgba(0,240,255,${nodes[i].o})`; ctx.fill();
-      }
-      raf = requestAnimationFrame(draw);
-    };
-    init(); draw();
-    window.addEventListener("resize", init);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", init); };
-  }, []);
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
+/* ── Scan Line ── */
+const ScanLine = memo(function ScanLine() {
+  return <div className="hero-scanline absolute inset-0 pointer-events-none z-20" />;
 });
 
-const FullTerminal = memo(function FullTerminal() {
-  const [visibleLines, setVisibleLines] = useState(0);
-  const bodyRef = useRef(null);
-  useEffect(() => {
-    if (visibleLines >= TERMINAL_LINES.length) return;
-    const timer = setTimeout(() => setVisibleLines((v) => v + 1), TERMINAL_LINES[visibleLines]?.prompt ? 800 : 300);
-    return () => clearTimeout(timer);
-  }, [visibleLines]);
-  useEffect(() => { if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight; }, [visibleLines]);
+/* ── Stats Row ── */
+const stats = [
+  { val: "4+", lbl: "Years" },
+  { val: "80+", lbl: "HoFs" },
+  { val: "2", lbl: "CVEs" },
+  { val: "6", lbl: "Certs" },
+];
 
-  return (
-    <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.9, delay: 0.9, ease: [0.22, 1, 0.36, 1] }} className="w-full">
-      <div className="rounded-xl border border-cyan-500/10 bg-[#060618]/90 backdrop-blur-xl overflow-hidden shadow-[0_0_40px_rgba(0,240,255,0.04)]">
-        <div className="flex items-center justify-between px-5 py-3 border-b border-cyan-500/[0.06] bg-cyan-500/[0.02]">
-          <div className="flex items-center gap-2">
-            <div className="flex gap-1.5">
-              <div className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-              <div className="h-3 w-3 rounded-full bg-[#febc2e]" />
-              <div className="h-3 w-3 rounded-full bg-[#28c840]" />
-            </div>
-            <span className="ml-3 text-[12px] text-neon-cyan/30 font-mono">rajdip@kali ~</span>
-          </div>
-          <span className="text-[10px] text-white/10 font-mono">bash</span>
-        </div>
-        <div ref={bodyRef} className="p-5 font-mono text-[13px] sm:text-[14px] leading-[1.7] h-[280px] sm:h-[300px] overflow-y-auto scrollbar-hide">
-          {TERMINAL_LINES.slice(0, visibleLines).map((line, i) => (
-            <div key={i} className="flex items-start">
-              {line.prompt ? (
-                <><span className="text-neon-cyan/60 shrink-0">$&nbsp;</span><span className="text-white/60">{line.text}</span></>
-              ) : (
-                <span className={line.success ? "text-neon-green" : line.danger ? "text-neon-pink font-semibold" : line.dim ? "text-white/20" : "text-white/30"}>{line.text}</span>
-              )}
-            </div>
-          ))}
-          {visibleLines < TERMINAL_LINES.length && (
-            <div className="flex items-center">
-              <span className="text-neon-cyan/60">$&nbsp;</span>
-              <span className="w-2 h-[18px] bg-neon-cyan/50 animate-pulse" />
-            </div>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
+const fade = (d = 0) => ({
+  initial: { opacity: 0, y: 24 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.8, delay: d, ease: [0.22, 1, 0.36, 1] },
 });
-
-function GlitchText({ text, className }) {
-  return <span className={`hero-glitch relative inline-block ${className}`} data-text={text}>{text}</span>;
-}
-
-const fade = (d = 0) => ({ initial: { opacity: 0, y: 24 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.8, delay: d, ease: [0.22, 1, 0.36, 1] } });
 
 export default function Hero() {
   const role = useTypingEffect(ROLES);
-  return (
-    <section id="home" className="relative min-h-[100dvh] flex flex-col justify-center px-6 overflow-hidden">
-      <NetworkCanvas />
-      <div className="absolute top-0 left-1/4 w-[700px] h-[700px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(0,240,255,0.06), transparent 60%)" }} />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(168,85,247,0.05), transparent 60%)" }} />
+  const nameTop = useDecryptEffect(NAME_TOP, 400, 35);
+  const nameBot = useDecryptEffect(NAME_BOT, 900, 35);
 
-      <div className="relative z-10 mx-auto max-w-5xl w-full">
-        <div className="text-center mb-14">
-          <motion.div {...fade(0.1)} className="flex justify-center mb-8">
+  return (
+    <section id="home" className="relative min-h-[100dvh] flex flex-col justify-center overflow-hidden">
+      {/* Matrix rain */}
+      <MatrixRain />
+
+      {/* Top vignette */}
+      <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-base via-base/50 to-transparent z-10 pointer-events-none" />
+      {/* Bottom vignette */}
+      <div className="absolute bottom-0 inset-x-0 h-60 bg-gradient-to-t from-base via-base/60 to-transparent z-10 pointer-events-none" />
+      {/* Side fades */}
+      <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-base to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-base to-transparent z-10 pointer-events-none" />
+
+      {/* Center glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] pointer-events-none z-[5]"
+        style={{ background: "radial-gradient(circle, rgba(0,240,255,0.06), transparent 60%)" }} />
+
+      {/* Content */}
+      <div className="relative z-20 mx-auto max-w-6xl w-full px-6">
+        <div className="text-center">
+          {/* Status badge */}
+          <motion.div {...fade(0.1)} className="flex justify-center mb-10">
             <div className="inline-flex items-center gap-2 rounded-full bg-neon-cyan/[0.04] border border-neon-cyan/[0.1] backdrop-blur-md px-4 py-2 text-[12px] font-mono">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-green opacity-75" />
@@ -166,27 +178,42 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          <motion.h1 initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-[0.92] font-mono">
-            <GlitchText text="Rajdip" className="text-white" /><br />
-            <span className="gradient-text">Dey Sarkar</span>
-          </motion.h1>
+          {/* Prefix */}
+          <motion.div {...fade(0.2)} className="mb-4">
+            <span className="text-neon-cyan/30 font-mono text-sm tracking-widest">[ SYSTEM ACCESS GRANTED ]</span>
+          </motion.div>
 
-          <motion.div {...fade(0.45)} className="mt-5 flex justify-center items-center gap-2">
-            <span className="text-neon-cyan/30 font-mono text-sm">~/</span>
-            <div className="text-lg sm:text-xl text-white/35 tracking-wide font-mono">
+          {/* Decrypted Name */}
+          <div className="mb-4">
+            <h1 className="text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] font-black tracking-tighter leading-[0.85] font-mono">
+              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.3 }}
+                className={`block ${nameTop.done ? "text-white" : "text-neon-cyan"} transition-colors duration-500`}>
+                {nameTop.display || "\u00A0"}
+              </motion.span>
+              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 0.3 }}
+                className={`block ${nameBot.done ? "gradient-text" : "text-neon-violet"} transition-colors duration-500`}>
+                {nameBot.display || "\u00A0"}
+              </motion.span>
+            </h1>
+          </div>
+
+          {/* Role typing */}
+          <motion.div {...fade(1.8)} className="mt-6 flex justify-center items-center gap-2">
+            <span className="text-neon-cyan/40 font-mono text-sm">~/</span>
+            <div className="text-lg sm:text-xl text-white/40 tracking-wide font-mono">
               {role}<span className="inline-block w-[2px] h-5 bg-neon-cyan/60 ml-0.5 hero-blink align-middle" />
             </div>
           </motion.div>
 
-          <motion.p {...fade(0.6)} className="mt-5 text-sm text-white/20 max-w-xl mx-auto leading-relaxed">
+          {/* Description */}
+          <motion.p {...fade(2.0)} className="mt-5 text-sm text-white/20 max-w-xl mx-auto leading-relaxed font-mono">
             I break things so you can build them stronger. Offensive security across web, API, mobile, cloud & Active Directory.
           </motion.p>
 
-          <motion.div {...fade(0.75)} className="mt-8 flex flex-wrap justify-center gap-3">
+          {/* CTA Buttons */}
+          <motion.div {...fade(2.2)} className="mt-10 flex flex-wrap justify-center gap-3">
             <a href="#services"
-               className="group inline-flex items-center gap-2 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20 px-7 py-3.5 text-sm font-mono font-semibold text-neon-cyan hover:bg-neon-cyan/15 hover:border-neon-cyan/30 hover:shadow-[0_0_25px_rgba(0,240,255,0.12)] transition-all duration-300">
+               className="group inline-flex items-center gap-2 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20 px-7 py-3.5 text-sm font-mono font-semibold text-neon-cyan hover:bg-neon-cyan/15 hover:border-neon-cyan/30 hover:shadow-[0_0_30px_rgba(0,240,255,0.15)] transition-all duration-300">
               View Services <ArrowDown className="h-3.5 w-3.5 group-hover:translate-y-0.5 transition-transform" />
             </a>
             <a href="#about"
@@ -195,9 +222,10 @@ export default function Hero() {
             </a>
           </motion.div>
 
-          <motion.div {...fade(0.9)} className="mt-10 flex justify-center">
+          {/* Stats */}
+          <motion.div {...fade(2.4)} className="mt-12 flex justify-center">
             <div className="inline-flex items-center divide-x divide-cyan-500/[0.08]">
-              {[{ val: "4+", lbl: "Years" }, { val: "80+", lbl: "HoFs" }, { val: "2", lbl: "CVEs" }, { val: "6", lbl: "Certs" }].map((s) => (
+              {stats.map((s) => (
                 <div key={s.lbl} className="px-6 sm:px-8 text-center">
                   <div className="text-xl sm:text-2xl font-mono font-bold text-neon-cyan">{s.val}</div>
                   <div className="text-[9px] text-white/15 tracking-[0.15em] mt-0.5 uppercase font-mono">{s.lbl}</div>
@@ -206,11 +234,11 @@ export default function Hero() {
             </div>
           </motion.div>
         </div>
-        <FullTerminal />
       </div>
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5, duration: 1 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10">
+      {/* Scroll indicator */}
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3, duration: 1 }}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20">
         <a href="#about" className="flex flex-col items-center gap-2 group">
           <span className="text-[9px] text-white/10 uppercase tracking-[0.2em] font-mono group-hover:text-neon-cyan/30 transition-colors">scroll</span>
           <div className="h-7 w-4 rounded-full border border-white/10 flex justify-center pt-1 group-hover:border-neon-cyan/20 transition-colors">
@@ -222,12 +250,16 @@ export default function Hero() {
       <style>{`
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         .hero-blink { animation: blink 0.8s step-end infinite; }
-        .hero-glitch { position: relative; }
-        .hero-glitch::before, .hero-glitch::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; will-change: opacity, transform; }
-        .hero-glitch::before { color: #00f0ff; animation: g1 4s ease-in-out infinite; }
-        .hero-glitch::after { color: #a855f7; animation: g2 4s ease-in-out infinite; }
-        @keyframes g1 { 0%, 92%, 100% { opacity: 0; transform: translate3d(0,0,0); } 93% { opacity: 0.7; transform: translate3d(-3px,1px,0); } 94% { opacity: 0; } }
-        @keyframes g2 { 0%, 90%, 100% { opacity: 0; transform: translate3d(0,0,0); } 91% { opacity: 0.6; transform: translate3d(3px,-1px,0); } 92% { opacity: 0; } }
+        @keyframes scanline { 0% { transform: translateY(-100%); } 100% { transform: translateY(100vh); } }
+        .hero-scanline::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, rgba(0,240,255,0.08), transparent);
+          animation: scanline 8s linear infinite;
+        }
       `}</style>
     </section>
   );
