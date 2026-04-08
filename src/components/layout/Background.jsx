@@ -1,38 +1,27 @@
 export default function Background() {
   return (
     <div className="fixed inset-0 -z-50 pointer-events-none overflow-hidden">
-      {/* Base */}
-      <div className="absolute inset-0 bg-[#09090b]" />
+      <div className="absolute inset-0 bg-[#050510]" />
 
-      {/* Top-left violet orb — static, no animation */}
-      <div
-        className="absolute -top-[300px] -left-[200px] h-[800px] w-[800px] rounded-full opacity-[0.15] blur-[120px]"
-        style={{ background: "radial-gradient(circle, #7c3aed, transparent 70%)", willChange: "auto" }}
-      />
+      {/* Cyan orb top-left */}
+      <div className="absolute -top-[200px] -left-[200px] h-[700px] w-[700px] rounded-full opacity-[0.07] blur-[150px]"
+           style={{ background: "radial-gradient(circle, #00f0ff, transparent 70%)" }} />
 
-      {/* Bottom-right blue orb — static */}
-      <div
-        className="absolute -bottom-[200px] -right-[200px] h-[700px] w-[700px] rounded-full opacity-[0.1] blur-[120px]"
-        style={{ background: "radial-gradient(circle, #3b82f6, transparent 70%)", willChange: "auto" }}
-      />
+      {/* Violet orb bottom-right */}
+      <div className="absolute -bottom-[200px] -right-[200px] h-[600px] w-[600px] rounded-full opacity-[0.06] blur-[130px]"
+           style={{ background: "radial-gradient(circle, #a855f7, transparent 70%)" }} />
 
-      {/* Center subtle warm glow — static */}
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[900px] rounded-full opacity-[0.04] blur-[100px]"
-        style={{ background: "radial-gradient(circle, #f59e0b, transparent 70%)" }}
-      />
+      {/* Grid lines */}
+      <div className="absolute inset-0 opacity-[0.03]"
+           style={{
+             backgroundImage: "linear-gradient(rgba(0,240,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,0.3) 1px, transparent 1px)",
+             backgroundSize: "80px 80px",
+           }} />
 
-      {/* Fine dot grid */}
-      <div
-        className="absolute inset-0 opacity-[0.025]"
-        style={{
-          backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.7) 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-        }}
-      />
-
-      {/* Top gradient fade */}
-      <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-violet-950/20 to-transparent" />
+      {/* Top vignette */}
+      <div className="absolute top-0 inset-x-0 h-[400px] bg-gradient-to-b from-[#050510] via-transparent to-transparent" />
+      {/* Bottom vignette */}
+      <div className="absolute bottom-0 inset-x-0 h-[300px] bg-gradient-to-t from-[#050510] to-transparent" />
     </div>
   );
 }

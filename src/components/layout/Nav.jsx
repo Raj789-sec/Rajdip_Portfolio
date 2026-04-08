@@ -41,31 +41,28 @@ export default function Nav() {
         className={[
           "mx-auto max-w-7xl px-5 transition-all duration-500",
           solid
-            ? "bg-[#09090b]/80 backdrop-blur-2xl border-b border-white/[0.06]"
+            ? "bg-[#050510]/80 backdrop-blur-2xl border-b border-cyan-500/[0.06]"
             : "bg-transparent border-b border-transparent",
         ].join(" ")}
       >
         <div className="relative flex items-center py-4">
           {/* Logo */}
           <a href="#home" className="flex items-center gap-3 group">
-            <div className="relative">
-              <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-violet-500/20 to-blue-500/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative h-9 w-9 grid place-items-center rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 text-white font-bold text-sm shadow-lg shadow-violet-500/20">
-                RS
-              </div>
+            <div className="relative h-9 w-9 grid place-items-center rounded-lg bg-base-200 border border-cyan-500/20 text-neon-cyan font-mono font-bold text-sm group-hover:border-cyan-500/40 group-hover:shadow-[0_0_15px_rgba(0,240,255,0.15)] transition-all duration-300">
+              RS
             </div>
-            <span className="hidden sm:inline-block text-lg font-semibold tracking-tight text-white/90">
-              Rajdip Sarkar
+            <span className="hidden sm:inline-block text-sm font-mono font-semibold tracking-tight text-white/80">
+              rajdip<span className="text-neon-cyan">.sec</span>
             </span>
           </a>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-1">
+          <nav className="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-0.5">
             {LINKS.slice(0, -1).map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="px-4 py-2 text-[14px] font-medium text-white/50 hover:text-white rounded-lg hover:bg-white/[0.04] transition-all duration-300"
+                className="px-3.5 py-2 text-[13px] font-medium text-white/35 hover:text-neon-cyan rounded-lg hover:bg-cyan-500/[0.04] transition-all duration-300"
               >
                 {link.name}
               </a>
@@ -75,18 +72,18 @@ export default function Nav() {
           {/* CTA */}
           <a
             href="#contact"
-            className="ml-auto hidden lg:inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-[14px] font-medium
-                       bg-white/[0.05] border border-white/[0.08] text-white/80
-                       hover:bg-white/[0.08] hover:border-white/[0.15] hover:text-white
+            className="ml-auto hidden lg:inline-flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-mono font-medium
+                       border border-cyan-500/20 text-neon-cyan/80
+                       hover:bg-cyan-500/[0.06] hover:border-cyan-500/30 hover:shadow-[0_0_20px_rgba(0,240,255,0.08)]
                        transition-all duration-300"
           >
-            Let's Connect <ArrowUpRight className="h-3.5 w-3.5" />
+            Contact <ArrowUpRight className="h-3.5 w-3.5" />
           </a>
 
           {/* Mobile Toggle */}
           <button
             onClick={() => setOpen((v) => !v)}
-            className="lg:hidden ml-auto inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/70 hover:bg-white/[0.06] transition-all"
+            className="lg:hidden ml-auto inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-white/60 hover:text-neon-cyan transition-all"
             aria-label="Toggle navigation"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -94,21 +91,12 @@ export default function Nav() {
         </div>
 
         {/* Mobile Menu */}
-        <div
-          className={[
-            "lg:hidden overflow-hidden transition-all duration-500 ease-out",
-            open ? "max-h-[500px] opacity-100 pb-4" : "max-h-0 opacity-0",
-          ].join(" ")}
-        >
+        <div className={["lg:hidden overflow-hidden transition-all duration-500 ease-out", open ? "max-h-[500px] opacity-100 pb-4" : "max-h-0 opacity-0"].join(" ")}>
           <div className="border-t border-white/[0.06] pt-3">
             <div className="flex flex-col gap-1">
               {LINKS.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className="rounded-xl px-4 py-2.5 text-white/60 hover:text-white hover:bg-white/[0.04] transition-all duration-300"
-                >
+                <a key={link.href} href={link.href} onClick={() => setOpen(false)}
+                   className="rounded-lg px-4 py-2.5 text-white/40 hover:text-neon-cyan hover:bg-cyan-500/[0.04] transition-all duration-300 font-mono text-sm">
                   {link.name}
                 </a>
               ))}

@@ -17,38 +17,16 @@ export default function Portfolio() {
     <>
       <Background />
       <CursorGlow />
-      <main className="relative z-10 min-h-screen text-white">
+      <main className="relative z-10 min-h-screen text-white font-mono">
         <Nav />
         <Hero />
-
-        <section id="about" className="section scroll-mt-24">
-          <About />
-        </section>
-
-        <section id="services" className="section scroll-mt-24">
-          <Services />
-        </section>
-
-        <section id="achievements" className="section scroll-mt-24">
-          <Achievements />
-        </section>
-
-        <section id="skills" className="section scroll-mt-24">
-          <Skills />
-        </section>
-
-        <section id="experience" className="section scroll-mt-24">
-          <ExperienceEducation />
-        </section>
-
-        <section id="projects" className="section scroll-mt-24">
-          <ProjectsResearch />
-        </section>
-
-        <section id="Blogs" className="section scroll-mt-24">
-          <Blogs />
-        </section>
-
+        <About />
+        <Services />
+        <Achievements />
+        <Skills />
+        <ExperienceEducation />
+        <ProjectsResearch />
+        <Blogs />
         <Footer />
       </main>
     </>
