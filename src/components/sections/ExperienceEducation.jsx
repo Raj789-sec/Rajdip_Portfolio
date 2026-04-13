@@ -38,43 +38,39 @@ const fade = (d = 0) => ({
 
 export default function ExperienceEducation() {
   return (
-    <section id="experience" className="relative py-24 px-6">
+    <section id="experience" className="relative py-24 px-6 bg-surface-100">
       <div className="mx-auto max-w-6xl">
         <motion.div {...fade()}>
           <p className="section-label">Career</p>
-          <h2 className="text-4xl sm:text-5xl font-heading font-bold tracking-tight mb-12">
-            <span className="gradient-text">Experience.</span>
-          </h2>
+          <h2 className="text-3xl sm:text-4xl font-heading font-extrabold tracking-tight mb-12">Experience</h2>
         </motion.div>
 
         <div className="relative">
-          {/* Timeline line */}
-          <div className="absolute left-[15px] top-3 bottom-3 w-px bg-gradient-to-b from-accent-indigo/30 via-accent-violet/15 to-transparent hidden md:block" />
+          <div className="absolute left-[15px] top-3 bottom-3 w-px bg-gradient-to-b from-accent-indigo/30 via-surface-300 to-transparent hidden md:block" />
 
           <div className="grid grid-cols-1 gap-5">
             {jobs.map((job, i) => (
               <motion.div key={i} {...fade(0.1 * i)} className="relative md:pl-12">
-                {/* Timeline dot */}
-                <div className={`absolute left-0 top-8 h-[31px] w-[31px] rounded-full border-2 hidden md:flex items-center justify-center ${
-                  job.current ? "border-green-400 bg-green-400/10" : "border-accent-indigo/25 bg-accent-indigo/5"
+                <div className={`absolute left-0 top-8 h-[31px] w-[31px] rounded-full border-2 hidden md:flex items-center justify-center bg-white ${
+                  job.current ? "border-accent-green" : "border-surface-300"
                 }`}>
-                  <div className={`h-2.5 w-2.5 rounded-full ${job.current ? "bg-green-400 animate-pulse" : "bg-accent-indigo/30"}`} />
+                  <div className={`h-2.5 w-2.5 rounded-full ${job.current ? "bg-accent-green" : "bg-surface-300"}`} />
                 </div>
 
-                <div className={`${i === 0 ? "glow-card" : "glass-card"} p-8`}>
+                <div className={`${i === 0 ? "card-accent" : "card"} p-8`}>
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-3">
-                        <h3 className="text-lg font-heading font-semibold text-white/85">{job.title}</h3>
+                        <h3 className="text-lg font-heading font-bold text-navy">{job.title}</h3>
                         {job.current && (
-                          <span className="rounded-full bg-green-400/10 border border-green-400/20 px-2.5 py-0.5 text-[10px] font-heading font-semibold text-green-400">
+                          <span className="rounded-full bg-accent-green/10 border border-accent-green/20 px-2.5 py-0.5 text-[10px] font-heading font-bold text-accent-green">
                             Current
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-accent-indigo/60 font-heading font-medium mt-0.5">{job.company}</p>
+                      <p className="text-sm text-accent-indigo font-heading font-semibold mt-0.5">{job.company}</p>
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-white/20 font-body shrink-0">
+                    <div className="flex items-center gap-4 text-xs text-navy-400 font-body shrink-0">
                       <span className="inline-flex items-center gap-1.5">
                         <CalendarDays className="h-3.5 w-3.5" /> {job.period}
                       </span>
@@ -83,7 +79,7 @@ export default function ExperienceEducation() {
                       </span>
                     </div>
                   </div>
-                  <p className="mt-3 text-sm text-white/30 leading-relaxed font-body">{job.description}</p>
+                  <p className="mt-3 text-sm text-navy-500 leading-relaxed font-body">{job.description}</p>
                   <div className="mt-4 flex flex-wrap gap-2">
                     {job.tags.map((t) => (
                       <span key={t} className="tag-pill">{t}</span>

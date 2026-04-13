@@ -1,10 +1,9 @@
-import { useEffect, useState, useRef, memo } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowDown, Shield, Bug, Terminal } from "lucide-react";
+import { ArrowRight, Shield, Award, Bug } from "lucide-react";
 
 const ROLES = ["Penetration Tester", "Red Teamer", "Security Researcher", "Bug Bounty Hunter"];
 
-/* ── Typing effect ── */
 function useTypingEffect(words, typeSpeed = 80, deleteSpeed = 40, pause = 2200) {
   const [text, setText] = useState("");
   const [idx, setIdx] = useState(0);
@@ -22,74 +21,78 @@ function useTypingEffect(words, typeSpeed = 80, deleteSpeed = 40, pause = 2200) 
   return text;
 }
 
-/* ── Animated counter ── */
-function useCounter(target, duration = 2000, delay = 0) {
-  const [count, setCount] = useState(0);
-  const [started, setStarted] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setStarted(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
-  useEffect(() => {
-    if (!started) return;
-    const num = parseInt(target);
-    if (isNaN(num)) { setCount(target); return; }
-    const steps = 40;
-    const inc = num / steps;
-    let current = 0;
-    const timer = setInterval(() => {
-      current += inc;
-      if (current >= num) { setCount(num); clearInterval(timer); }
-      else setCount(Math.floor(current));
-    }, duration / steps);
-    return () => clearInterval(timer);
-  }, [started, target, duration]);
-  return typeof target === "string" && target.includes("+") ? count + "+" : count;
-}
-
-/* ── Floating shapes ── */
-const FloatingShapes = memo(function FloatingShapes() {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {/* Large ring */}
-      <div className="absolute top-[15%] right-[8%] w-[300px] h-[300px] md:w-[400px] md:h-[400px] animate-float opacity-[0.06]">
-        <div className="w-full h-full rounded-full border-2 border-accent-indigo" />
-      </div>
-      {/* Small filled circle */}
-      <div className="absolute bottom-[20%] left-[5%] w-16 h-16 rounded-full bg-accent-violet/10 animate-float-slow" />
-      {/* Gradient blob */}
-      <div className="absolute top-[40%] left-[12%] w-[200px] h-[200px] rounded-full blur-[80px] bg-accent-indigo/10 animate-glow-pulse" />
-      {/* Small ring */}
-      <div className="absolute bottom-[30%] right-[15%] w-20 h-20 rounded-full border border-accent-pink/15 animate-float-slow" />
-      {/* Dot */}
-      <div className="absolute top-[25%] left-[30%] w-2 h-2 rounded-full bg-accent-cyan/30 animate-float" />
-      <div className="absolute top-[60%] right-[25%] w-1.5 h-1.5 rounded-full bg-accent-violet/40 animate-float-slow" />
-    </div>
-  );
-});
-
-const stats = [
-  { val: "4", suffix: "+", lbl: "Years Exp." },
-  { val: "80", suffix: "+", lbl: "Hall of Fames" },
-  { val: "2", suffix: "", lbl: "Published CVEs" },
-  { val: "6", suffix: "", lbl: "Certifications" },
-];
-
 const fade = (d = 0) => ({
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.8, delay: d, ease: [0.22, 1, 0.36, 1] },
+  transition: { duration: 0.7, delay: d, ease: [0.22, 1, 0.36, 1] },
 });
 
-function StatCounter({ val, suffix, lbl, delay }) {
-  const count = useCounter(parseInt(val), 1800, delay);
+/* Hero illustration card — placeholder for custom art */
+function HeroCard() {
   return (
-    <div className="text-center px-5 sm:px-8">
-      <div className="text-3xl sm:text-4xl font-heading font-bold text-white">
-        {count}<span className="text-accent-indigo">{suffix}</span>
+    <motion.div {...fade(0.4)} className="relative">
+      <div className="card-accent p-6 max-w-[320px] mx-auto">
+        {/* Avatar area — replace with custom illustration */}
+        <div className="relative bg-gradient-to-br from-navy-50 to-navy-100 rounded-lg h-[340px] flex items-center justify-center overflow-hidden">
+          <img
+            src="/assets/avatar.png"
+            alt="Rajdip Dey Sarkar"
+            className="h-full w-full object-cover"
+            onError={(e) => {
+              e.target.style.display = "none";
+              e.target.parentElement.innerHTML = `
+                <div class="flex flex-col items-center gap-4 p-8">
+                  <div class="h-32 w-32 rounded-full bg-gradient-to-br from-accent-indigo to-accent-blue flex items-center justify-center text-white text-5xl font-heading font-bold">R</div>
+                  <div class="text-center">
+                    <div class="text-navy font-heading font-bold text-lg">Rajdip Dey Sarkar</div>
+                    <div class="text-navy-400 text-sm">Security Consultant</div>
+                  </div>
+                </div>`;
+            }}
+          />
+          {/* Floating badges */}
+          <div className="absolute top-3 right-3 bg-white rounded-full px-3 py-1 shadow-md flex items-center gap-1.5 text-[11px] font-heading font-bold text-accent-indigo border border-accent-indigo/20">
+            <Shield className="h-3 w-3" /> OSCP+
+          </div>
+        </div>
+        <div className="mt-4 text-center">
+          <p className="section-label justify-center text-[10px]">Security Consultant</p>
+          <h3 className="font-heading font-bold text-navy text-lg">Rajdip Dey Sarkar</h3>
+        </div>
       </div>
-      <div className="text-xs text-white/25 mt-1 font-body">{lbl}</div>
-    </div>
+
+      {/* Floating stat cards */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.8, duration: 0.6 }}
+        className="absolute -left-6 top-16 bg-white rounded-xl shadow-lg border border-surface-200 px-4 py-3 flex items-center gap-3 animate-float"
+      >
+        <div className="h-9 w-9 rounded-lg bg-accent-gold/10 flex items-center justify-center">
+          <Award className="h-5 w-5 text-accent-gold" />
+        </div>
+        <div>
+          <div className="text-lg font-heading font-bold text-navy">80+</div>
+          <div className="text-[11px] text-navy-400">Hall of Fames</div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 1.0, duration: 0.6 }}
+        className="absolute -right-4 bottom-24 bg-white rounded-xl shadow-lg border border-surface-200 px-4 py-3 flex items-center gap-3 animate-float"
+        style={{ animationDelay: "1s" }}
+      >
+        <div className="h-9 w-9 rounded-lg bg-accent-green/10 flex items-center justify-center">
+          <Bug className="h-5 w-5 text-accent-green" />
+        </div>
+        <div>
+          <div className="text-lg font-heading font-bold text-navy">2</div>
+          <div className="text-[11px] text-navy-400">Published CVEs</div>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -97,94 +100,59 @@ export default function Hero() {
   const role = useTypingEffect(ROLES);
 
   return (
-    <section id="home" className="relative min-h-[100dvh] flex flex-col justify-center px-6 overflow-hidden">
-      <FloatingShapes />
+    <section id="home" className="relative min-h-[90vh] flex items-center px-6 overflow-hidden">
+      {/* Subtle bg decoration */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-navy-50/50 blur-[100px] pointer-events-none" />
 
-      {/* Hero gradient spotlight */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-[900px] h-[900px] pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(99,102,241,0.08), transparent 55%)" }} />
+      <div className="relative z-10 mx-auto max-w-7xl w-full py-16 md:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-12 items-center">
+          {/* Left — Text */}
+          <div>
+            <motion.p {...fade(0.05)} className="section-label">
+              Offensive Security Specialist
+            </motion.p>
 
-      <div className="relative z-10 mx-auto max-w-5xl w-full">
-        <div className="text-center">
-          {/* Badge */}
-          <motion.div {...fade(0.1)} className="flex justify-center mb-8">
-            <div className="inline-flex items-center gap-2.5 rounded-full bg-accent-indigo/[0.06] border border-accent-indigo/[0.12] backdrop-blur-md px-5 py-2.5 text-[13px] font-body">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
+            <motion.h1
+              {...fade(0.15)}
+              className="text-4xl sm:text-5xl lg:text-[56px] font-heading font-extrabold leading-[1.1] tracking-tight"
+            >
+              <span className="text-accent-indigo">Breaking barriers</span>{" "}
+              in cybersecurity, trusted by the world's leading organizations
+            </motion.h1>
+
+            <motion.div {...fade(0.3)} className="mt-5 flex items-center gap-2">
+              <span className="text-navy-400 font-body text-lg">&gt;</span>
+              <span className="text-navy-500 font-body text-lg">
+                {role}<span className="inline-block w-[2px] h-5 bg-accent-indigo ml-0.5 align-middle" style={{ animation: "blink 0.8s step-end infinite" }} />
               </span>
-              <span className="text-white/50">Available for engagements</span>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          {/* Heading */}
-          <motion.h1
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-heading font-bold tracking-tight leading-[0.95]"
-          >
-            <span className="text-white">I Break Things</span>
-            <br />
-            <span className="gradient-text-animate">So You Can Build</span>
-            <br />
-            <span className="text-white">Them Stronger</span>
-          </motion.h1>
+            <motion.div {...fade(0.45)} className="mt-8 flex flex-wrap gap-3">
+              <a href="#services" className="btn-primary">
+                Explore Services <ArrowRight className="h-4 w-4" />
+              </a>
+              <a href="#achievements" className="btn-secondary">
+                View Achievements
+              </a>
+            </motion.div>
 
-          {/* Role typing */}
-          <motion.div {...fade(0.6)} className="mt-6 flex justify-center items-center gap-3">
-            <div className="flex items-center gap-2 text-lg sm:text-xl text-white/30 font-body">
-              <Shield className="h-5 w-5 text-accent-indigo/60" />
-              {role}<span className="inline-block w-[2px] h-5 bg-accent-indigo/60 ml-0.5 align-middle" style={{ animation: "blink 0.8s step-end infinite" }} />
-            </div>
-          </motion.div>
+            {/* Client logos teaser */}
+            <motion.div {...fade(0.6)} className="mt-12">
+              <p className="text-xs text-navy-300 font-body uppercase tracking-wider mb-4">Recognized by</p>
+              <div className="flex items-center gap-6 opacity-40 grayscale">
+                {["Apple", "Microsoft", "Sony", "UN", "US DoD"].map((name) => (
+                  <span key={name} className="text-sm font-heading font-bold text-navy-400">{name}</span>
+                ))}
+              </div>
+            </motion.div>
+          </div>
 
-          {/* Description */}
-          <motion.p {...fade(0.8)} className="mt-5 text-base text-white/25 max-w-2xl mx-auto leading-relaxed font-body">
-            Offensive security specialist with expertise across web applications, APIs, mobile, cloud infrastructure, and Active Directory environments.
-          </motion.p>
-
-          {/* CTA */}
-          <motion.div {...fade(1.0)} className="mt-10 flex flex-wrap justify-center gap-4">
-            <a href="#services"
-               className="group inline-flex items-center gap-2.5 rounded-xl px-8 py-4 text-sm font-heading font-semibold
-                          bg-gradient-to-r from-accent-indigo to-accent-violet text-white
-                          hover:shadow-[0_0_40px_rgba(99,102,241,0.3)] hover:scale-[1.02]
-                          transition-all duration-300">
-              Explore Services <ArrowDown className="h-4 w-4 group-hover:translate-y-0.5 transition-transform" />
-            </a>
-            <a href="#projects"
-               className="inline-flex items-center gap-2.5 rounded-xl border border-white/[0.08] bg-white/[0.02] px-8 py-4 text-sm font-heading font-medium text-white/50 hover:text-accent-indigo hover:border-accent-indigo/20 hover:bg-accent-indigo/[0.03] transition-all duration-300">
-              <Bug className="h-4 w-4" /> View Research
-            </a>
-          </motion.div>
-
-          {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.3, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-16"
-          >
-            <div className="glass-card inline-flex items-center divide-x divide-white/[0.04] px-4 py-6 sm:px-6 sm:py-8 mx-auto">
-              {stats.map((s, i) => (
-                <StatCounter key={s.lbl} {...s} delay={1400 + i * 200} />
-              ))}
-            </div>
-          </motion.div>
+          {/* Right — Card */}
+          <div className="flex justify-center lg:justify-end">
+            <HeroCard />
+          </div>
         </div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5, duration: 1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
-        <a href="#about" className="flex flex-col items-center gap-2 group">
-          <span className="text-[10px] text-white/15 uppercase tracking-[0.2em] font-body group-hover:text-accent-indigo/40 transition-colors">Scroll</span>
-          <div className="h-8 w-5 rounded-full border border-white/10 flex justify-center pt-1.5 group-hover:border-accent-indigo/20 transition-colors">
-            <div className="h-1.5 w-1 rounded-full bg-accent-indigo/40 animate-bounce" />
-          </div>
-        </a>
-      </motion.div>
 
       <style>{`
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }

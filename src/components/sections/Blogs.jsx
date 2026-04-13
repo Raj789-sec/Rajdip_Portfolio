@@ -49,12 +49,10 @@ export default function Blogs() {
       <div className="mb-12 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <motion.div {...fade()}>
           <p className="section-label">Writing</p>
-          <h2 className="text-4xl sm:text-5xl font-heading font-bold tracking-tight">
-            <span className="gradient-text">Latest articles.</span>
-          </h2>
+          <h2 className="text-3xl sm:text-4xl font-heading font-extrabold tracking-tight">Latest articles</h2>
         </motion.div>
         <a href={`https://medium.com/@${MEDIUM_USERNAME}`} target="_blank" rel="noreferrer"
-           className="inline-flex items-center gap-2 text-sm font-body text-white/25 hover:text-accent-indigo transition-colors">
+           className="inline-flex items-center gap-2 text-sm font-heading font-semibold text-navy-400 hover:text-accent-indigo transition-colors">
           All posts <ArrowUpRight className="h-3.5 w-3.5" />
         </a>
       </div>
@@ -62,24 +60,22 @@ export default function Blogs() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
         {grid.map((p, i) =>
           loading ? (
-            <div key={i} className="h-[240px] glass-card animate-pulse" />
+            <div key={i} className="h-[240px] card animate-pulse bg-surface-100" />
           ) : (
             <motion.a key={p.url} href={p.url} target="_blank" rel="noreferrer" {...fade(0.05 * i)}
-              className="glass-card p-7 flex flex-col group block">
-              <div className="flex items-center gap-3 text-[11px] text-white/20 font-body mb-4">
+              className="card p-7 flex flex-col group block">
+              <div className="flex items-center gap-3 text-[11px] text-navy-300 font-body mb-4">
                 <span className="inline-flex items-center gap-1"><CalendarDays className="h-3 w-3" /> {fmtDate(p.date)}</span>
                 <span className="inline-flex items-center gap-1"><Clock4 className="h-3 w-3" /> {p.read}</span>
               </div>
-              <h3 className="text-[15px] font-heading font-semibold text-white/75 group-hover:text-accent-indigo transition-colors clamp-2 leading-snug">{p.title}</h3>
-              <p className="mt-2 text-[12px] text-white/20 leading-relaxed clamp-3 flex-1 font-body">{p.excerpt}</p>
+              <h3 className="text-[15px] font-heading font-bold text-navy group-hover:text-accent-indigo transition-colors clamp-2 leading-snug">{p.title}</h3>
+              <p className="mt-2 text-[12px] text-navy-400 leading-relaxed clamp-3 flex-1 font-body">{p.excerpt}</p>
               {p.tags?.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-1.5">
-                  {p.tags.slice(0, 2).map((t) => (
-                    <span key={t} className="tag-pill">{t}</span>
-                  ))}
+                  {p.tags.slice(0, 2).map((t) => (<span key={t} className="tag-pill text-[10px]">{t}</span>))}
                 </div>
               )}
-              <div className="mt-auto pt-5 flex items-center gap-1.5 text-xs font-body text-accent-indigo/40 group-hover:text-accent-indigo transition-colors">
+              <div className="mt-auto pt-5 flex items-center gap-1.5 text-xs font-heading font-semibold text-accent-indigo/50 group-hover:text-accent-indigo transition-colors">
                 Read article <ArrowRight className="h-3 w-3" />
               </div>
             </motion.a>
