@@ -20,8 +20,8 @@ export default function CursorGlow() {
     <div className="pointer-events-none fixed inset-0 z-[9999] hidden md:block">
       <div ref={glow} className="absolute will-change-transform"
            style={{
-             width: 400, height: 400,
-             background: "radial-gradient(circle, rgba(0,240,255,0.04) 0%, rgba(168,85,247,0.02) 40%, transparent 70%)",
+             width: 500, height: 500,
+             background: "radial-gradient(circle, rgba(99,102,241,0.04) 0%, rgba(139,92,246,0.02) 40%, transparent 70%)",
              borderRadius: "50%",
            }} />
     </div>

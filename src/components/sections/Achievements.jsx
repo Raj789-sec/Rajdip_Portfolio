@@ -21,75 +21,89 @@ const HOF = [
 ];
 
 const STATS = [
-  { value: "80+", label: "Hall of Fames", icon: <Shield className="h-5 w-5" />, color: "cyan" },
-  { value: "18+", label: "Organizations", icon: <Globe className="h-5 w-5" />, color: "violet" },
-  { value: "#1", label: "North Bengal CTF", icon: <Trophy className="h-5 w-5" />, color: "green" },
-  { value: "1%", label: "TryHackMe Global", icon: <Zap className="h-5 w-5" />, color: "pink" },
+  { value: "80+", label: "Hall of Fames", icon: <Shield className="h-5 w-5" />, gradient: "from-accent-indigo to-accent-blue" },
+  { value: "18+", label: "Organizations", icon: <Globe className="h-5 w-5" />, gradient: "from-accent-violet to-accent-pink" },
+  { value: "#1", label: "North Bengal CTF", icon: <Trophy className="h-5 w-5" />, gradient: "from-accent-cyan to-accent-indigo" },
+  { value: "1%", label: "TryHackMe Global", icon: <Zap className="h-5 w-5" />, gradient: "from-accent-amber to-accent-pink" },
 ];
 
-const sc = {
-  cyan: { bg: "bg-neon-cyan/10", text: "text-neon-cyan", border: "border-neon-cyan/15", glow: "shadow-[0_0_20px_rgba(0,240,255,0.06)]" },
-  violet: { bg: "bg-neon-violet/10", text: "text-neon-violet", border: "border-neon-violet/15", glow: "shadow-[0_0_20px_rgba(168,85,247,0.06)]" },
-  green: { bg: "bg-neon-green/10", text: "text-neon-green", border: "border-neon-green/15", glow: "shadow-[0_0_20px_rgba(57,255,20,0.06)]" },
-  pink: { bg: "bg-neon-pink/10", text: "text-neon-pink", border: "border-neon-pink/15", glow: "shadow-[0_0_20px_rgba(255,46,170,0.06)]" },
-};
+const BADGES = [
+  { label: "North Bengal CTF", badge: "Winner", gradient: "from-accent-cyan to-accent-indigo" },
+  { label: "Kolkata Police CTF", badge: "Top 5", gradient: "from-accent-violet to-accent-pink" },
+  { label: "Hack The Box", badge: "Pro Hacker", gradient: "from-accent-indigo to-accent-blue" },
+  { label: "TryHackMe", badge: "Top 1%", gradient: "from-accent-amber to-accent-pink", href: "https://tryhackme.com/p/Raj7" },
+];
 
-const fade = (d = 0) => ({ initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true }, transition: { duration: 0.6, delay: d, ease: [0.22, 1, 0.36, 1] } });
+const fade = (d = 0) => ({
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.7, delay: d, ease: [0.22, 1, 0.36, 1] },
+});
 
 export default function Achievements() {
   return (
-    <section id="Achievements" className="relative py-24 px-6 scroll-mt-28 overflow-hidden">
+    <section id="achievements" className="relative py-24 px-6 scroll-mt-28 overflow-hidden">
       <div className="mx-auto max-w-6xl relative z-10">
-        <motion.div {...fade()} className="text-center mb-14">
-          <p className="text-xs font-mono font-medium text-neon-cyan/60 tracking-widest uppercase mb-4">// recognition</p>
-          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold font-mono tracking-tight"><span className="gradient-text">Hall of Fame.</span></h2>
-          <p className="mt-4 text-white/20 max-w-xl mx-auto text-sm leading-relaxed">Recognized by leading organizations worldwide for responsibly disclosing security vulnerabilities.</p>
+        <motion.div {...fade()} className="text-center mb-16">
+          <p className="section-label justify-center">Recognition</p>
+          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-heading font-bold tracking-tight">
+            <span className="gradient-text">Hall of Fame.</span>
+          </h2>
+          <p className="mt-4 text-white/20 max-w-xl mx-auto text-sm font-body leading-relaxed">
+            Recognized by leading organizations worldwide for responsibly disclosing security vulnerabilities.
+          </p>
         </motion.div>
 
-        <motion.div {...fade(0.1)} className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-16">
-          {STATS.map((s) => { const c = sc[s.color]; return (
-            <div key={s.label} className={`rounded-xl border ${c.border} ${c.bg} p-5 text-center ${c.glow} hover:scale-[1.02] transition-all duration-500`}>
-              <div className={`h-10 w-10 rounded-lg ${c.bg} ${c.text} flex items-center justify-center mx-auto mb-3`}>{s.icon}</div>
-              <div className={`text-3xl sm:text-4xl font-mono font-extrabold ${c.text}`}>{s.value}</div>
-              <div className="text-[10px] text-white/20 tracking-widest uppercase mt-1.5 font-mono">{s.label}</div>
+        {/* Stats grid */}
+        <motion.div {...fade(0.1)} className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+          {STATS.map((s) => (
+            <div key={s.label} className="glass-card p-6 text-center group">
+              <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${s.gradient} flex items-center justify-center mx-auto mb-4 text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                {s.icon}
+              </div>
+              <div className="text-3xl sm:text-4xl font-heading font-bold text-white">{s.value}</div>
+              <div className="text-[11px] text-white/25 tracking-wide uppercase mt-1.5 font-body">{s.label}</div>
             </div>
-          ); })}
+          ))}
         </motion.div>
 
+        {/* Logo grid */}
         <motion.div {...fade(0.2)}>
-          <h3 className="text-xs font-mono font-medium text-white/20 tracking-widest uppercase mb-6 text-center">// trusted_by</h3>
+          <p className="text-sm font-heading font-semibold text-white/25 mb-6 text-center">Trusted by global organizations</p>
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
             {HOF.map((item, i) => (
-              <motion.div key={item.name} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }} transition={{ duration: 0.4, delay: 0.02 * i }}
-                className="group cyber-card p-4 flex flex-col items-center justify-center gap-2.5 hover:-translate-y-1">
-                <div className="h-10 w-auto flex items-center justify-center">
+              <motion.div key={item.name}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.02 * i }}
+                className="group glass-card p-4 flex flex-col items-center justify-center gap-2.5">
+                <div className="h-10 w-auto flex items-center justify-center grayscale group-hover:grayscale-0 opacity-60 group-hover:opacity-100 transition-all duration-300">
                   <img src={item.logo} alt={item.name} className="max-h-10 w-auto object-contain" />
                 </div>
-                <span className="text-[10px] text-white/25 font-mono group-hover:text-neon-cyan/60 transition-colors">{item.name}</span>
+                <span className="text-[10px] text-white/20 font-body group-hover:text-accent-indigo/60 transition-colors">{item.name}</span>
               </motion.div>
             ))}
           </div>
         </motion.div>
 
+        {/* CTF Badges */}
         <motion.div {...fade(0.3)} className="mt-14 flex flex-wrap items-center justify-center gap-3">
-          {[
-            { label: "North Bengal CTF", badge: "Winner", color: "neon-green" },
-            { label: "Kolkata Police CTF", badge: "Top 5", color: "neon-violet" },
-            { label: "Hack The Box", badge: "Pro Hacker", color: "neon-cyan" },
-          ].map((c) => (
-            <div key={c.label} className={`flex items-center gap-3 rounded-lg border border-${c.color}/10 bg-${c.color}/[0.04] px-5 py-2.5 font-mono text-sm`}>
-              <Trophy className={`h-4 w-4 text-${c.color}`} />
-              <span className="text-white/50">{c.label}</span>
-              <span className={`text-xs font-bold text-${c.color} bg-${c.color}/10 rounded px-2 py-0.5`}>{c.badge}</span>
-            </div>
-          ))}
-          <a href="https://tryhackme.com/p/Raj7" target="_blank" rel="noreferrer"
-             className="flex items-center gap-3 rounded-lg border border-neon-pink/10 bg-neon-pink/[0.04] px-5 py-2.5 font-mono text-sm hover:bg-neon-pink/[0.08] transition-all">
-            <Zap className="h-4 w-4 text-neon-pink" />
-            <span className="text-white/50">TryHackMe</span>
-            <span className="text-xs font-bold text-neon-pink bg-neon-pink/10 rounded px-2 py-0.5">Top 1%</span>
-          </a>
+          {BADGES.map((c) => {
+            const Tag = c.href ? "a" : "div";
+            const props = c.href ? { href: c.href, target: "_blank", rel: "noreferrer" } : {};
+            return (
+              <Tag key={c.label} {...props}
+                className="flex items-center gap-3 glass-card px-5 py-3 text-sm font-body hover:!border-accent-indigo/20 transition-all">
+                <Trophy className="h-4 w-4 text-accent-indigo/60" />
+                <span className="text-white/50">{c.label}</span>
+                <span className={`text-[11px] font-heading font-semibold text-white bg-gradient-to-r ${c.gradient} rounded-full px-2.5 py-0.5`}>
+                  {c.badge}
+                </span>
+              </Tag>
+            );
+          })}
         </motion.div>
       </div>
     </section>

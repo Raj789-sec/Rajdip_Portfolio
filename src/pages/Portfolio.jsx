@@ -17,7 +17,7 @@ export default function Portfolio() {
     <>
       <Background />
       <CursorGlow />
-      <main className="relative z-10 min-h-screen text-white font-mono">
+      <main className="relative z-10 min-h-screen text-white">
         <Nav />
         <Hero />
         <About />

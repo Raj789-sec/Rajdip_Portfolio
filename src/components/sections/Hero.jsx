@@ -1,111 +1,10 @@
-import { useEffect, useRef, useState, memo, useCallback } from "react";
+import { useEffect, useState, useRef, memo } from "react";
 import { motion } from "framer-motion";
-import { ArrowDown, ChevronRight } from "lucide-react";
+import { ArrowDown, Shield, Bug, Terminal } from "lucide-react";
 
 const ROLES = ["Penetration Tester", "Red Teamer", "Security Researcher", "Bug Bounty Hunter"];
-const CHARS = "アイウエオカキクケコサシスセソタチツテト0123456789ABCDEF!@#$%^&*";
-const NAME_TOP = "RAJDIP";
-const NAME_BOT = "DEY SARKAR";
 
-/* ── Matrix Rain Canvas ── */
-const MatrixRain = memo(function MatrixRain() {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    let raf, cols, drops;
-    const FONT = 14;
-
-    const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = canvas.offsetWidth * dpr;
-      canvas.height = canvas.offsetHeight * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      cols = Math.floor(canvas.offsetWidth / FONT);
-      drops = Array.from({ length: cols }, () => Math.random() * -100);
-    };
-
-    resize();
-
-    const draw = () => {
-      ctx.fillStyle = "rgba(5,5,16,0.12)";
-      ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-      ctx.font = `${FONT}px "JetBrains Mono", monospace`;
-
-      for (let i = 0; i < cols; i++) {
-        const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
-        const x = i * FONT;
-        const y = drops[i] * FONT;
-
-        // Head of the stream — bright cyan
-        ctx.fillStyle = "rgba(0,240,255,0.9)";
-        ctx.fillText(ch, x, y);
-
-        // Trail — dimmer green-cyan
-        ctx.fillStyle = "rgba(0,240,255,0.15)";
-        ctx.fillText(CHARS[Math.floor(Math.random() * CHARS.length)], x, y - FONT);
-        ctx.fillStyle = "rgba(0,240,255,0.06)";
-        ctx.fillText(CHARS[Math.floor(Math.random() * CHARS.length)], x, y - FONT * 2);
-
-        drops[i] += 0.6;
-
-        if (y > canvas.offsetHeight && Math.random() > 0.985) {
-          drops[i] = 0;
-        }
-      }
-      raf = requestAnimationFrame(draw);
-    };
-
-    draw();
-    window.addEventListener("resize", resize, { passive: true });
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
-  }, []);
-
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-40" />;
-});
-
-/* ── Decryption text effect ── */
-function useDecryptEffect(target, delay = 0, speed = 40) {
-  const [display, setDisplay] = useState("");
-  const [done, setDone] = useState(false);
-
-  useEffect(() => {
-    let iters = 0;
-    const maxIters = target.length * 3;
-    let timer;
-
-    const startTimer = setTimeout(() => {
-      timer = setInterval(() => {
-        iters++;
-        const revealed = Math.floor((iters / maxIters) * target.length);
-        let result = "";
-        for (let i = 0; i < target.length; i++) {
-          if (target[i] === " ") {
-            result += " ";
-          } else if (i < revealed) {
-            result += target[i];
-          } else {
-            result += CHARS[Math.floor(Math.random() * CHARS.length)];
-          }
-        }
-        setDisplay(result);
-        if (revealed >= target.length) {
-          clearInterval(timer);
-          setDisplay(target);
-          setDone(true);
-        }
-      }, speed);
-    }, delay);
-
-    return () => { clearTimeout(startTimer); clearInterval(timer); };
-  }, [target, delay, speed]);
-
-  return { display, done };
-}
-
-/* ── Typing role effect ── */
+/* ── Typing effect ── */
 function useTypingEffect(words, typeSpeed = 80, deleteSpeed = 40, pause = 2200) {
   const [text, setText] = useState("");
   const [idx, setIdx] = useState(0);
@@ -123,113 +22,153 @@ function useTypingEffect(words, typeSpeed = 80, deleteSpeed = 40, pause = 2200) 
   return text;
 }
 
-/* ── Scan Line ── */
-const ScanLine = memo(function ScanLine() {
-  return <div className="hero-scanline absolute inset-0 pointer-events-none z-20" />;
+/* ── Animated counter ── */
+function useCounter(target, duration = 2000, delay = 0) {
+  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setStarted(true), delay);
+    return () => clearTimeout(t);
+  }, [delay]);
+  useEffect(() => {
+    if (!started) return;
+    const num = parseInt(target);
+    if (isNaN(num)) { setCount(target); return; }
+    const steps = 40;
+    const inc = num / steps;
+    let current = 0;
+    const timer = setInterval(() => {
+      current += inc;
+      if (current >= num) { setCount(num); clearInterval(timer); }
+      else setCount(Math.floor(current));
+    }, duration / steps);
+    return () => clearInterval(timer);
+  }, [started, target, duration]);
+  return typeof target === "string" && target.includes("+") ? count + "+" : count;
+}
+
+/* ── Floating shapes ── */
+const FloatingShapes = memo(function FloatingShapes() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* Large ring */}
+      <div className="absolute top-[15%] right-[8%] w-[300px] h-[300px] md:w-[400px] md:h-[400px] animate-float opacity-[0.06]">
+        <div className="w-full h-full rounded-full border-2 border-accent-indigo" />
+      </div>
+      {/* Small filled circle */}
+      <div className="absolute bottom-[20%] left-[5%] w-16 h-16 rounded-full bg-accent-violet/10 animate-float-slow" />
+      {/* Gradient blob */}
+      <div className="absolute top-[40%] left-[12%] w-[200px] h-[200px] rounded-full blur-[80px] bg-accent-indigo/10 animate-glow-pulse" />
+      {/* Small ring */}
+      <div className="absolute bottom-[30%] right-[15%] w-20 h-20 rounded-full border border-accent-pink/15 animate-float-slow" />
+      {/* Dot */}
+      <div className="absolute top-[25%] left-[30%] w-2 h-2 rounded-full bg-accent-cyan/30 animate-float" />
+      <div className="absolute top-[60%] right-[25%] w-1.5 h-1.5 rounded-full bg-accent-violet/40 animate-float-slow" />
+    </div>
+  );
 });
 
-/* ── Stats Row ── */
 const stats = [
-  { val: "4+", lbl: "Years" },
-  { val: "80+", lbl: "HoFs" },
-  { val: "2", lbl: "CVEs" },
-  { val: "6", lbl: "Certs" },
+  { val: "4", suffix: "+", lbl: "Years Exp." },
+  { val: "80", suffix: "+", lbl: "Hall of Fames" },
+  { val: "2", suffix: "", lbl: "Published CVEs" },
+  { val: "6", suffix: "", lbl: "Certifications" },
 ];
 
 const fade = (d = 0) => ({
-  initial: { opacity: 0, y: 24 },
+  initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.8, delay: d, ease: [0.22, 1, 0.36, 1] },
 });
 
+function StatCounter({ val, suffix, lbl, delay }) {
+  const count = useCounter(parseInt(val), 1800, delay);
+  return (
+    <div className="text-center px-5 sm:px-8">
+      <div className="text-3xl sm:text-4xl font-heading font-bold text-white">
+        {count}<span className="text-accent-indigo">{suffix}</span>
+      </div>
+      <div className="text-xs text-white/25 mt-1 font-body">{lbl}</div>
+    </div>
+  );
+}
+
 export default function Hero() {
   const role = useTypingEffect(ROLES);
-  const nameTop = useDecryptEffect(NAME_TOP, 400, 35);
-  const nameBot = useDecryptEffect(NAME_BOT, 900, 35);
 
   return (
-    <section id="home" className="relative min-h-[100dvh] flex flex-col justify-center overflow-hidden">
-      {/* Matrix rain */}
-      <MatrixRain />
+    <section id="home" className="relative min-h-[100dvh] flex flex-col justify-center px-6 overflow-hidden">
+      <FloatingShapes />
 
-      {/* Top vignette */}
-      <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-base via-base/50 to-transparent z-10 pointer-events-none" />
-      {/* Bottom vignette */}
-      <div className="absolute bottom-0 inset-x-0 h-60 bg-gradient-to-t from-base via-base/60 to-transparent z-10 pointer-events-none" />
-      {/* Side fades */}
-      <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-base to-transparent z-10 pointer-events-none" />
-      <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-base to-transparent z-10 pointer-events-none" />
+      {/* Hero gradient spotlight */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-[900px] h-[900px] pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(99,102,241,0.08), transparent 55%)" }} />
 
-      {/* Center glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] pointer-events-none z-[5]"
-        style={{ background: "radial-gradient(circle, rgba(0,240,255,0.06), transparent 60%)" }} />
-
-      {/* Content */}
-      <div className="relative z-20 mx-auto max-w-6xl w-full px-6">
+      <div className="relative z-10 mx-auto max-w-5xl w-full">
         <div className="text-center">
-          {/* Status badge */}
-          <motion.div {...fade(0.1)} className="flex justify-center mb-10">
-            <div className="inline-flex items-center gap-2 rounded-full bg-neon-cyan/[0.04] border border-neon-cyan/[0.1] backdrop-blur-md px-4 py-2 text-[12px] font-mono">
+          {/* Badge */}
+          <motion.div {...fade(0.1)} className="flex justify-center mb-8">
+            <div className="inline-flex items-center gap-2.5 rounded-full bg-accent-indigo/[0.06] border border-accent-indigo/[0.12] backdrop-blur-md px-5 py-2.5 text-[13px] font-body">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-green opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-neon-green" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
               </span>
-              <span className="text-white/50">status: <span className="text-neon-green">available</span></span>
+              <span className="text-white/50">Available for engagements</span>
             </div>
           </motion.div>
 
-          {/* Prefix */}
-          <motion.div {...fade(0.2)} className="mb-4">
-            <span className="text-neon-cyan/30 font-mono text-sm tracking-widest">[ SYSTEM ACCESS GRANTED ]</span>
-          </motion.div>
-
-          {/* Decrypted Name */}
-          <div className="mb-4">
-            <h1 className="text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] font-black tracking-tighter leading-[0.85] font-mono">
-              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.3 }}
-                className={`block ${nameTop.done ? "text-white" : "text-neon-cyan"} transition-colors duration-500`}>
-                {nameTop.display || "\u00A0"}
-              </motion.span>
-              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 0.3 }}
-                className={`block ${nameBot.done ? "gradient-text" : "text-neon-violet"} transition-colors duration-500`}>
-                {nameBot.display || "\u00A0"}
-              </motion.span>
-            </h1>
-          </div>
+          {/* Heading */}
+          <motion.h1
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-heading font-bold tracking-tight leading-[0.95]"
+          >
+            <span className="text-white">I Break Things</span>
+            <br />
+            <span className="gradient-text-animate">So You Can Build</span>
+            <br />
+            <span className="text-white">Them Stronger</span>
+          </motion.h1>
 
           {/* Role typing */}
-          <motion.div {...fade(1.8)} className="mt-6 flex justify-center items-center gap-2">
-            <span className="text-neon-cyan/40 font-mono text-sm">~/</span>
-            <div className="text-lg sm:text-xl text-white/40 tracking-wide font-mono">
-              {role}<span className="inline-block w-[2px] h-5 bg-neon-cyan/60 ml-0.5 hero-blink align-middle" />
+          <motion.div {...fade(0.6)} className="mt-6 flex justify-center items-center gap-3">
+            <div className="flex items-center gap-2 text-lg sm:text-xl text-white/30 font-body">
+              <Shield className="h-5 w-5 text-accent-indigo/60" />
+              {role}<span className="inline-block w-[2px] h-5 bg-accent-indigo/60 ml-0.5 align-middle" style={{ animation: "blink 0.8s step-end infinite" }} />
             </div>
           </motion.div>
 
           {/* Description */}
-          <motion.p {...fade(2.0)} className="mt-5 text-sm text-white/20 max-w-xl mx-auto leading-relaxed font-mono">
-            I break things so you can build them stronger. Offensive security across web, API, mobile, cloud & Active Directory.
+          <motion.p {...fade(0.8)} className="mt-5 text-base text-white/25 max-w-2xl mx-auto leading-relaxed font-body">
+            Offensive security specialist with expertise across web applications, APIs, mobile, cloud infrastructure, and Active Directory environments.
           </motion.p>
 
-          {/* CTA Buttons */}
-          <motion.div {...fade(2.2)} className="mt-10 flex flex-wrap justify-center gap-3">
+          {/* CTA */}
+          <motion.div {...fade(1.0)} className="mt-10 flex flex-wrap justify-center gap-4">
             <a href="#services"
-               className="group inline-flex items-center gap-2 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20 px-7 py-3.5 text-sm font-mono font-semibold text-neon-cyan hover:bg-neon-cyan/15 hover:border-neon-cyan/30 hover:shadow-[0_0_30px_rgba(0,240,255,0.15)] transition-all duration-300">
-              View Services <ArrowDown className="h-3.5 w-3.5 group-hover:translate-y-0.5 transition-transform" />
+               className="group inline-flex items-center gap-2.5 rounded-xl px-8 py-4 text-sm font-heading font-semibold
+                          bg-gradient-to-r from-accent-indigo to-accent-violet text-white
+                          hover:shadow-[0_0_40px_rgba(99,102,241,0.3)] hover:scale-[1.02]
+                          transition-all duration-300">
+              Explore Services <ArrowDown className="h-4 w-4 group-hover:translate-y-0.5 transition-transform" />
             </a>
-            <a href="#about"
-               className="inline-flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-7 py-3.5 text-sm font-mono text-white/40 hover:text-neon-cyan hover:border-cyan-500/15 transition-all duration-300">
-              Learn More <ChevronRight className="h-3.5 w-3.5" />
+            <a href="#projects"
+               className="inline-flex items-center gap-2.5 rounded-xl border border-white/[0.08] bg-white/[0.02] px-8 py-4 text-sm font-heading font-medium text-white/50 hover:text-accent-indigo hover:border-accent-indigo/20 hover:bg-accent-indigo/[0.03] transition-all duration-300">
+              <Bug className="h-4 w-4" /> View Research
             </a>
           </motion.div>
 
           {/* Stats */}
-          <motion.div {...fade(2.4)} className="mt-12 flex justify-center">
-            <div className="inline-flex items-center divide-x divide-cyan-500/[0.08]">
-              {stats.map((s) => (
-                <div key={s.lbl} className="px-6 sm:px-8 text-center">
-                  <div className="text-xl sm:text-2xl font-mono font-bold text-neon-cyan">{s.val}</div>
-                  <div className="text-[9px] text-white/15 tracking-[0.15em] mt-0.5 uppercase font-mono">{s.lbl}</div>
-                </div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.3, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-16"
+          >
+            <div className="glass-card inline-flex items-center divide-x divide-white/[0.04] px-4 py-6 sm:px-6 sm:py-8 mx-auto">
+              {stats.map((s, i) => (
+                <StatCounter key={s.lbl} {...s} delay={1400 + i * 200} />
               ))}
             </div>
           </motion.div>
@@ -237,29 +176,18 @@ export default function Hero() {
       </div>
 
       {/* Scroll indicator */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3, duration: 1 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5, duration: 1 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
         <a href="#about" className="flex flex-col items-center gap-2 group">
-          <span className="text-[9px] text-white/10 uppercase tracking-[0.2em] font-mono group-hover:text-neon-cyan/30 transition-colors">scroll</span>
-          <div className="h-7 w-4 rounded-full border border-white/10 flex justify-center pt-1 group-hover:border-neon-cyan/20 transition-colors">
-            <div className="h-1.5 w-1 rounded-full bg-neon-cyan/30 animate-bounce" />
+          <span className="text-[10px] text-white/15 uppercase tracking-[0.2em] font-body group-hover:text-accent-indigo/40 transition-colors">Scroll</span>
+          <div className="h-8 w-5 rounded-full border border-white/10 flex justify-center pt-1.5 group-hover:border-accent-indigo/20 transition-colors">
+            <div className="h-1.5 w-1 rounded-full bg-accent-indigo/40 animate-bounce" />
           </div>
         </a>
       </motion.div>
 
       <style>{`
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        .hero-blink { animation: blink 0.8s step-end infinite; }
-        @keyframes scanline { 0% { transform: translateY(-100%); } 100% { transform: translateY(100vh); } }
-        .hero-scanline::after {
-          content: "";
-          position: absolute;
-          left: 0;
-          right: 0;
-          height: 2px;
-          background: linear-gradient(90deg, transparent, rgba(0,240,255,0.08), transparent);
-          animation: scanline 8s linear infinite;
-        }
       `}</style>
     </section>
   );

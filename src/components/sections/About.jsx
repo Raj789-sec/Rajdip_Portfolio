@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Award } from "lucide-react";
 import OscpLogo from "../../assets/certs/oscp.png";
 import CrtoLogo from "../../assets/certs/crto.png";
 import CrtpLogo from "../../assets/certs/crtp.png";
@@ -18,54 +18,66 @@ const CERTS = [
   { name: "CAP", full: "Certified AppSec Practitioner", logo: CapLogo, href: "https://www.linkedin.com/posts/rdsarkar_certified-appsec-practitioner-activity-7012447184361062400-gXl5" },
 ];
 
-const fade = (d = 0) => ({ initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true }, transition: { duration: 0.6, delay: d, ease: [0.22, 1, 0.36, 1] } });
+const fade = (d = 0) => ({
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.7, delay: d, ease: [0.22, 1, 0.36, 1] },
+});
 
 export default function About() {
   return (
-    <section id="about" className="relative py-20 px-6">
+    <section id="about" className="relative py-24 px-6">
       <div className="mx-auto max-w-6xl">
         <motion.div {...fade()}>
-          <p className="text-xs font-mono font-medium text-neon-cyan/60 tracking-widest uppercase mb-3">// about</p>
-          <h2 className="text-4xl sm:text-5xl font-bold font-mono tracking-tight mb-10">
+          <p className="section-label">About</p>
+          <h2 className="text-4xl sm:text-5xl font-heading font-bold tracking-tight mb-12">
             <span className="gradient-text">Who I am.</span>
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-          <motion.div {...fade(0.1)} className="md:col-span-7 cyber-card neon-border p-8">
-            <p className="text-white/40 leading-relaxed">{SUMMARY}</p>
-            <div className="mt-5 flex flex-wrap gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+          {/* Summary card */}
+          <motion.div {...fade(0.1)} className="md:col-span-7 glow-card p-8 sm:p-10">
+            <p className="text-white/40 leading-relaxed font-body text-[15px]">{SUMMARY}</p>
+            <div className="mt-6 flex flex-wrap gap-2">
               {["Tool Dev", "Automation", "AI + Sec", "Research", "Cloud/Containers"].map((t) => (
-                <span key={t} className="rounded-md bg-neon-cyan/[0.04] border border-neon-cyan/[0.08] px-3 py-1 text-xs font-mono text-neon-cyan/40 hover:text-neon-cyan/70 hover:border-neon-cyan/20 transition-all duration-300">{t}</span>
+                <span key={t} className="tag-pill">{t}</span>
               ))}
             </div>
           </motion.div>
 
-          <motion.div {...fade(0.2)} className="md:col-span-5 cyber-card p-8 flex flex-col justify-center">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="h-4 w-4 text-neon-violet" />
-              <span className="text-sm font-mono font-semibold text-white/60">interests</span>
+          {/* Interests card */}
+          <motion.div {...fade(0.2)} className="md:col-span-5 glass-card p-8 flex flex-col justify-center">
+            <div className="flex items-center gap-2 mb-5">
+              <Sparkles className="h-4 w-4 text-accent-violet" />
+              <span className="text-sm font-heading font-semibold text-white/60">Interests</span>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {INTERESTS.map((it) => (
-                <div key={it} className="flex items-center gap-2.5 text-sm text-white/30">
-                  <span className="h-1 w-1 rounded-full bg-neon-cyan/40" />{it}
+                <div key={it} className="flex items-center gap-3 text-sm text-white/35 font-body">
+                  <span className="h-1.5 w-1.5 rounded-full bg-accent-indigo/50" />{it}
                 </div>
               ))}
             </div>
           </motion.div>
 
-          <motion.div {...fade(0.3)} className="md:col-span-12">
-            <h3 className="text-xs font-mono font-medium text-white/25 tracking-widest uppercase mb-4 mt-4">// certifications</h3>
+          {/* Certifications */}
+          <motion.div {...fade(0.3)} className="md:col-span-12 mt-2">
+            <div className="flex items-center gap-2 mb-5">
+              <Award className="h-4 w-4 text-accent-amber" />
+              <span className="text-sm font-heading font-semibold text-white/40">Certifications</span>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {CERTS.map((c) => (
-                <a key={c.name} href={c.href} target="_blank" rel="noreferrer" className="group cyber-card p-4 flex flex-col items-center text-center gap-3">
-                  <div className="h-16 w-16 rounded-lg overflow-hidden bg-white/[0.02] flex items-center justify-center p-1">
-                    <img src={c.logo} alt={c.name} className="h-full w-full object-contain brightness-90 group-hover:brightness-110 transition-all duration-300" />
+                <a key={c.name} href={c.href} target="_blank" rel="noreferrer"
+                   className="group glass-card p-5 flex flex-col items-center text-center gap-3 hover:!border-accent-indigo/25">
+                  <div className="h-16 w-16 rounded-xl overflow-hidden bg-white/[0.03] flex items-center justify-center p-1.5">
+                    <img src={c.logo} alt={c.name} className="h-full w-full object-contain brightness-90 group-hover:brightness-110 group-hover:scale-105 transition-all duration-300" />
                   </div>
                   <div>
-                    <div className="text-sm font-mono font-semibold text-white/70 group-hover:text-neon-cyan transition-colors">{c.name}</div>
-                    <div className="text-[10px] text-white/20 mt-0.5 leading-tight">{c.full}</div>
+                    <div className="text-sm font-heading font-semibold text-white/70 group-hover:text-accent-indigo transition-colors">{c.name}</div>
+                    <div className="text-[10px] text-white/20 mt-0.5 leading-tight font-body">{c.full}</div>
                   </div>
                 </a>
               ))}

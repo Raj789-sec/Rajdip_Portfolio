@@ -41,18 +41,18 @@ export default function Nav() {
         className={[
           "mx-auto max-w-7xl px-5 transition-all duration-500",
           solid
-            ? "bg-[#050510]/80 backdrop-blur-2xl border-b border-cyan-500/[0.06]"
+            ? "bg-[#06060f]/80 backdrop-blur-2xl border-b border-accent-indigo/[0.06]"
             : "bg-transparent border-b border-transparent",
         ].join(" ")}
       >
         <div className="relative flex items-center py-4">
           {/* Logo */}
           <a href="#home" className="flex items-center gap-3 group">
-            <div className="relative h-9 w-9 grid place-items-center rounded-lg bg-base-200 border border-cyan-500/20 text-neon-cyan font-mono font-bold text-sm group-hover:border-cyan-500/40 group-hover:shadow-[0_0_15px_rgba(0,240,255,0.15)] transition-all duration-300">
-              RS
+            <div className="relative h-9 w-9 grid place-items-center rounded-xl bg-gradient-to-br from-accent-indigo/20 to-accent-violet/10 border border-accent-indigo/20 text-accent-indigo font-heading font-bold text-sm group-hover:border-accent-indigo/40 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] transition-all duration-300">
+              R
             </div>
-            <span className="hidden sm:inline-block text-sm font-mono font-semibold tracking-tight text-white/80">
-              rajdip<span className="text-neon-cyan">.sec</span>
+            <span className="hidden sm:inline-block text-sm font-heading font-semibold tracking-tight text-white/80">
+              Rajdip<span className="text-accent-indigo">.</span>
             </span>
           </a>
 
@@ -62,7 +62,7 @@ export default function Nav() {
               <a
                 key={link.href}
                 href={link.href}
-                className="px-3.5 py-2 text-[13px] font-medium text-white/35 hover:text-neon-cyan rounded-lg hover:bg-cyan-500/[0.04] transition-all duration-300"
+                className="px-3.5 py-2 text-[13px] font-medium font-body text-white/35 hover:text-accent-indigo rounded-lg hover:bg-accent-indigo/[0.04] transition-all duration-300"
               >
                 {link.name}
               </a>
@@ -72,18 +72,18 @@ export default function Nav() {
           {/* CTA */}
           <a
             href="#contact"
-            className="ml-auto hidden lg:inline-flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-mono font-medium
-                       border border-cyan-500/20 text-neon-cyan/80
-                       hover:bg-cyan-500/[0.06] hover:border-cyan-500/30 hover:shadow-[0_0_20px_rgba(0,240,255,0.08)]
+            className="ml-auto hidden lg:inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-[13px] font-heading font-semibold
+                       bg-gradient-to-r from-accent-indigo to-accent-violet text-white
+                       hover:shadow-[0_0_30px_rgba(99,102,241,0.25)] hover:scale-[1.02]
                        transition-all duration-300"
           >
-            Contact <ArrowUpRight className="h-3.5 w-3.5" />
+            Get in Touch <ArrowUpRight className="h-3.5 w-3.5" />
           </a>
 
           {/* Mobile Toggle */}
           <button
             onClick={() => setOpen((v) => !v)}
-            className="lg:hidden ml-auto inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-white/60 hover:text-neon-cyan transition-all"
+            className="lg:hidden ml-auto inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/60 hover:text-accent-indigo transition-all"
             aria-label="Toggle navigation"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -96,7 +96,7 @@ export default function Nav() {
             <div className="flex flex-col gap-1">
               {LINKS.map((link) => (
                 <a key={link.href} href={link.href} onClick={() => setOpen(false)}
-                   className="rounded-lg px-4 py-2.5 text-white/40 hover:text-neon-cyan hover:bg-cyan-500/[0.04] transition-all duration-300 font-mono text-sm">
+                   className="rounded-lg px-4 py-2.5 text-white/40 hover:text-accent-indigo hover:bg-accent-indigo/[0.04] transition-all duration-300 font-body text-sm">
                   {link.name}
                 </a>
               ))}
